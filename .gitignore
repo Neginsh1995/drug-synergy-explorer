@@ -16,5 +16,12 @@ data/Hackathon_data/Output_Prediction/Output.csv
 data/Hackathon_data/Drug_Modalities/
 data/Hackathon_data/Cell_Modalities/
 data/Hackathon_data/Input_train_test_DataSamples_Drug_Drug_Cell/
-# data: proprietary, never committed
-data/Hackathon_data/
+# data: only the four files the pipeline needs are committed; everything else stays local
+data/Hackathon_data/*
+!data/Hackathon_data/Output_Prediction/
+data/Hackathon_data/Output_Prediction/*
+!data/Hackathon_data/Output_Prediction/Output.csv.gz
+!data/Hackathon_data/Whole_Samples/
+data/Hackathon_data/Whole_Samples/*
+!data/Hackathon_data/Whole_Samples/DrugComb_V2_measured_combinations.csv
+!data/Hackathon_data/Cell_Drug_Annotation_Mapping/

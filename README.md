@@ -46,7 +46,7 @@ how Nightshift powers the app, the coding tool, and what is pre-existing: see
 | `run_pipeline.sh` | Shortlist and agent for one cell line or all of them |
 | `sql/` | Zetaris setup: source tables (01), semantic layer and data quality rules (02), checks (03), agent results table (04) |
 | `setup/` | Load the data into Zetaris's volume, mount it, link the model's data, check everything |
-| `data/` | Where the hackathon data goes (`data/Hackathon_data/`); the data is proprietary and not in the repository ([data/README.md](data/README.md)) |
+| `data/` | The four data files the pipeline needs ([data/README.md](data/README.md)) |
 | `results/` | Shortlists and agent results per cell line |
 | `docs/` | Install guide, submission notes, architecture diagram, slides |
 
@@ -54,8 +54,8 @@ how Nightshift powers the app, the coding tool, and what is pre-existing: see
 
 - Zetaris running locally in Docker, its JDBC driver JAR, Java 11+.
 - Python 3.10+ for the backend (`requirements.txt`: JayDeBeApi, JPype1).
-- The hackathon data folder, placed at `data/Hackathon_data/` (proprietary, not in the repository;
-  [data/README.md](data/README.md)). Unpack the prediction file once with `setup/unpack_data.sh`.
+- The data the pipeline needs is included in `data/Hackathon_data/` ([data/README.md](data/README.md)); unpack the
+  prediction file once with `setup/unpack_data.sh`.
 - Agent: Node.js (LTS) and Meterless Nightshift with a local model or a provider key.
 
 ## Setup
@@ -63,8 +63,7 @@ how Nightshift powers the app, the coding tool, and what is pre-existing: see
 Every step, with the queries and the expected output, is in
 [docs/INSTALL_AND_CHECK.md](docs/INSTALL_AND_CHECK.md). In short:
 
-0. Get the code, then place the hackathon data folder at `data/Hackathon_data/` (not in the repository)
-   and unpack its prediction file:
+0. Get the code and data, and unpack the prediction file:
 
    ```bash
    git clone https://github.com/Neginsh1995/drug-synergy-explorer.git
