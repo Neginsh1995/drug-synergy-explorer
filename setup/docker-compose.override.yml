@@ -1,0 +1,20 @@
+# Copy this file into the Zetaris platform folder (next to docker-compose.yml).
+# Docker Compose loads it automatically and mounts, read-only, into the Zetaris engine:
+#   - the drug-synergy-data volume (the hackathon data, see setup/load_source_files.sh)
+#   - this project's results/agent folder (the agent's ranked.csv files), so Zetaris can serve them
+# Both sit under customer-data/shared because Lightning only reads local files below
+# /home/zetaris/customer-data/shared.
+# The agent results path is relative to the platform folder and assumes the two folders sit side by
+# side; set DRUG_SYNERGY_AGENT_RESULTS to its full path otherwise.
+# The volume is external, so `docker compose down -v` keeps it; remove it with
+# `docker volume rm drug-synergy-data` once nothing mounts it.
+services:
+  driver:
+    volumes:
+      - drug-synergy-data:/home/zetaris/customer-data/shared/drug-synergy-data:ro
+      - ${DRUG_SYNERGY_AGENT_RESULTS:-../drug-synergy-explorer/results/agent}:/home/zetaris/customer-data/shared/agent-results:ro
+
+volumes:
+  drug-synergy-data:
+    external: true
+    name: drug-synergy-data

@@ -1,0 +1,9 @@
+{
+  "name": "my-markovian",
+  "private": true,
+  "type": "module",
+  "description": "Markovian engine clone with a Nightshift-backed cell-line drug-synergy literature pilot",
+  "scripts": {
+    "test": "npm test --prefix synergy_agent && npm test --prefix reference"
+  }
+}

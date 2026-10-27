@@ -1,0 +1,29 @@
+[
+  {
+    "id": "run-1",
+    "timestamp": 1793074538656,
+    "prompt": "For this Drug1 + Drug2 + cancer type + cell_line research unit, what verified evidence supports or contradicts synergy in cancer-related pathways, and how strong is the evidence in the exact specified cancer type and cell line? For each `Drug1 + Drug2 + cell_line+cancer type` unit, investigate whether the two drugs may act synergistically in biologically relevant cancer-related pathways and determine how strong the evidence is. Define the cancer scope for this workflow from the dataset and repos",
+    "mode": "RESEARCH",
+    "chunkConfig": {
+      "chunkSize": 8000,
+      "maxChunks": 3,
+      "carryoverTokens": 800,
+      "overlapTokens": 0
+    },
+    "chunks": [
+      {
+        "id": 1,
+        "tokens": 150,
+        "carryover": "",
+        "content": ">> cid52913813_58423153_cl136 round 1\nCOMPLETED: round 1 class=insufficient_or_conflicting synergy=unknown\nREMAINING: stop scientific review\nDECISIONS: status=stop_no_high_issues; pmids=none\nCONTEXT: [critical] Zero PubMed records retrieved by code for AZD-8186 + AZD-1208 in any cancer model. ROLE A correctly classified this unit as 'insufficient_or_conflicting' with evidence_level='none', direct_experimental_synergy='unknown', and empty citations arrays. All pathway/mechanistic content is explicitly labeled as hypothesis/speculation 'not confirmed by retrieved literature' or 'not supported by"
+      }
+    ],
+    "totalTokensUsed": 150,
+    "totalTokensSaved": 0,
+    "efficiencyPercent": 0,
+    "durationMs": 78244,
+    "status": "completed",
+    "tokenLabel": "estimated",
+    "output": ">> cid52913813_58423153_cl136 round 1\nCOMPLETED: round 1 class=insufficient_or_conflicting synergy=unknown\nREMAINING: stop scientific review\nDECISIONS: status=stop_no_high_issues; pmids=none\nCONTEXT: [critical] Zero PubMed records retrieved by code for AZD-8186 + AZD-1208 in any cancer model. ROLE A correctly classified this unit as 'insufficient_or_conflicting' with evidence_level='none', direct_experimental_synergy='unknown', and empty citations arrays. All pathway/mechanistic content is explicitly labeled as hypothesis/speculation 'not confirmed by retrieved literature' or 'not supported by"
+  }
+]

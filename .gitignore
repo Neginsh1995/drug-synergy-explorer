@@ -1,0 +1,20 @@
+.env.local
+.venv/
+__pycache__/
+.DS_Store
+.claude/
+node_modules/
+# machine-specific run records and caches (they hold local paths)
+results/agent/logs/
+results/agent/*/agent_run.log
+results/modalities_cache.json
+results/backup/
+# unpacked from Output.csv.gz by setup/unpack_data.sh
+data/Hackathon_data/Output_Prediction/Output.csv
+# data: only the CSVs the pipeline needs are in git; the modality files and train/test samples are in the
+# full data download (data/README.md)
+data/Hackathon_data/Drug_Modalities/
+data/Hackathon_data/Cell_Modalities/
+data/Hackathon_data/Input_train_test_DataSamples_Drug_Drug_Cell/
+# data: proprietary, never committed
+data/Hackathon_data/

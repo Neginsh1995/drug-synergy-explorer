@@ -1,0 +1,31 @@
+{
+  "run_id": "cell-line-synergy-screening",
+  "status": "stopped_candidates_exhausted",
+  "provider": {
+    "id": "meterless",
+    "app": "markovian-drug-synergy",
+    "baseUrl": "http://127.0.0.1:8088/v1",
+    "status": "online",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  "selection": {
+    "method": "all eligible CSV rows sorted by z_HSA descending; examine one at a time; keep pairs with synergy evidence (mode=include_mechanistic); reject the rest; stop at 5 kept or 10 examined. Filename is not used as cell-line provenance.",
+    "source_csv": "agent_input.csv",
+    "candidates_total": 8,
+    "target_keep": 5,
+    "max_examine": 10,
+    "synergy_mode": "include_mechanistic"
+  },
+  "pairs_processed": 8,
+  "kept": 4,
+  "rejected": 4,
+  "failures": [],
+  "ranked_pair_ids": [
+    "cid3461_11152667_cl136",
+    "cid11152667_54761306_cl136",
+    "cid17755052_25262792_cl136",
+    "cid15953870_54761306_cl136"
+  ],
+  "screened_file": "screened.csv",
+  "stop_reason": "candidates_exhausted"
+}

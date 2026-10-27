@@ -1,0 +1,11 @@
+order,pair_id,Drug1,Drug2,z_HSA,decision,evidence_class,score,rounds_used,reason
+"1","row 1","Fludarabine","Y-39983","3.7410547443209725","reject","insufficient_or_conflicting","0","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"2","row 2","Fludarabine","PLX-4720","3.377725343280187","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"3","row 3","Pazopanib","Dorsomorphin","3.1807266818527475","reject","insufficient_or_conflicting","0","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"4","row 4","Palbociclib","Pazopanib","3.112394411798058","keep","combination_effect_exact_cell","62","1","evidence_class=combination_effect_exact_cell, status=accepted"
+"5","row 5","Fludarabine","Dorsomorphin","3.0564480159622684","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"6","row 6","Mithramycin","Vismodegib","3.0461430762021537","reject","insufficient_or_conflicting","0","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"7","row 7","Vincristine","Jzl184","3.023775454227954","reject","insufficient_or_conflicting","0","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"8","row 8","Fludarabine","Palbociclib","2.9845677105141832","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"9","row 9","Fulvestrant","Actinomycin 7","2.974900245103084","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"10","row 10","N-(9,10-Dihydro-9,10-dioxo-2-phenanthrenyl)-2,2-dimethyl-propanamide","Akt inhibitor VIII","2.9395819670727583","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"

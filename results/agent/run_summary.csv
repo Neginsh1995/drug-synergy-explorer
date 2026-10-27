@@ -1,0 +1,3 @@
+cell_line,promising_pairs,examined,kept,agent_status
+647V,8,8,4,stopped_candidates_exhausted
+UACC62,432,10,1,stopped_max_examined

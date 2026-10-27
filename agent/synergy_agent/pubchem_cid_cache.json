@@ -1,0 +1,382 @@
+{
+  "3461": {
+    "cid": 3461,
+    "title": "4-Amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)-2-oxolanyl]-2-pyrimidinone",
+    "iupac": "4-amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)oxolan-2-yl]pyrimidin-2-one",
+    "synonyms": [
+      "103882-85-5",
+      "4-amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)oxolan-2-yl]-1,2-dihydropyrimidin-2-one",
+      "701937-51-1",
+      "4-amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)-2-oxolanyl]-2-pyrimidinone",
+      "4-amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)oxolan-2-yl]pyrimidin-2-one",
+      "3'-Epi Gemcitabine (Gemcitabine Impurity)",
+      "Gemctitabine",
+      "C9H11F2N3O4"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "5978": {
+    "cid": 5978,
+    "title": "Vincristine",
+    "iupac": "methyl (1R,9R,10S,11R,12R,19R)-11-acetyloxy-12-ethyl-4-[(13S,15S,17S)-17-ethyl-17-hydroxy-13-methoxycarbonyl-1,11-diazatetracyclo[13.3.1.04,12.05,10]nonadeca-4(12),5,7,9-tetraen-13-yl]-8-formyl-10-hydroxy-5-methoxy-8,16-diazapentacyclo[10.6.1.01,9.02,7.016,19]nonadeca-2,4,6,13-tetraene-10-carboxylate",
+    "synonyms": [
+      "vincristine",
+      "22-Oxovincaleukoblastine",
+      "Leurocristine",
+      "57-22-7",
+      "Vinkristin",
+      "Vincrystine",
+      "Vincristina",
+      "leucristine"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "104741": {
+    "cid": 104741,
+    "title": "Fulvestrant",
+    "iupac": "(7R,8R,9S,13S,14S,17S)-13-methyl-7-[9-(4,4,5,5,5-pentafluoropentylsulfinyl)nonyl]-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol",
+    "synonyms": [
+      "Fulvestrant",
+      "129453-61-8",
+      "Faslodex",
+      "Ici 182780",
+      "ICI-182780",
+      "ICI 182,780",
+      "ZD-9238",
+      "DTXSID4022369"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "163659": {
+    "cid": 163659,
+    "title": "Mithramycin",
+    "iupac": "(2S,3S)-2-[(2S,4R,5R,6R)-4-[(2S,4R,5S,6R)-4-[(2S,4S,5R,6R)-4,5-dihydroxy-4,6-dimethyloxan-2-yl]oxy-5-hydroxy-6-methyloxan-2-yl]oxy-5-hydroxy-6-methyloxan-2-yl]oxy-3-[(1S,3S,4R)-3,4-dihydroxy-1-methoxy-2-oxopentyl]-6-[(2S,4R,5R,6R)-4-[(2S,4R,5S,6R)-4,5-dihydroxy-6-methyloxan-2-yl]oxy-5-hydroxy-6-methyloxan-2-yl]oxy-8,9-dihydroxy-7-methyl-3,4-dihydro-2H-anthracen-1-one",
+    "synonyms": [
+      "plicamycin",
+      "MITHRAMYCIN",
+      "Mithracin",
+      "18378-89-7",
+      "Aureolic acid",
+      "Mithramycinum",
+      "Mithramycine",
+      "Plicamycine"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "657237": {
+    "cid": 657237,
+    "title": "Fludarabine",
+    "iupac": "(2R,3S,4S,5R)-2-(6-amino-2-fluoropurin-9-yl)-5-(hydroxymethyl)oxolane-3,4-diol",
+    "synonyms": [
+      "Fludarabine",
+      "21679-14-1",
+      "F-Ara-A",
+      "2-Fluoro Ara-A",
+      "Fludarabina",
+      "Fluradosa",
+      "9-beta-D-Arabinofuranosyl-2-fluoroadenine",
+      "Fludarabinum"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "5330286": {
+    "cid": 5330286,
+    "title": "Palbociclib",
+    "iupac": "6-acetyl-8-cyclopentyl-5-methyl-2-[(5-piperazin-1-yl-2-pyridinyl)amino]pyrido[2,3-d]pyrimidin-7-one",
+    "synonyms": [
+      "Palbociclib",
+      "571190-30-2",
+      "Ibrance",
+      "PD-0332991",
+      "PD0332991",
+      "PD 0332991",
+      "6-acetyl-8-cyclopentyl-5-methyl-2-((5-(piperazin-1-yl)pyridin-2-yl)amino)pyrido[2,3-d]pyrimidin-7(8H)-one",
+      "G9ZF61LE7G"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "9926586": {
+    "cid": 9926586,
+    "title": "N-(9,10-Dihydro-9,10-dioxo-2-phenanthrenyl)-2,2-dimethyl-propanamide",
+    "iupac": "N-(9,10-dioxophenanthren-2-yl)-2,2-dimethylpropanamide",
+    "synonyms": [
+      "345630-40-2",
+      "SF1670",
+      "PTP CD45 Inhibitor",
+      "N-(9,10-dioxo-9,10-dihydrophenanthren-2-yl)pivalamide",
+      "N-(9,10-Dihydro-9,10-dioxo-2-phenanthrenyl)-2,2-dimethyl-propanamide",
+      "SF1670(PTENinhibitor)",
+      "MFCD06411448",
+      "CHEMBL51314"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "10113978": {
+    "cid": 10113978,
+    "title": "Pazopanib",
+    "iupac": "5-[[4-[(2,3-dimethylindazol-6-yl)-methylamino]pyrimidin-2-yl]amino]-2-methylbenzenesulfonamide",
+    "synonyms": [
+      "Pazopanib",
+      "444731-52-6",
+      "GW786034",
+      "pazopanibum",
+      "5-((4-((2,3-dimethyl-2H-indazol-6-yl)(methyl)amino)pyrimidin-2-yl)amino)-2-methylbenzenesulfonamide",
+      "DTXSID8048733",
+      "7RN5DR86CK",
+      "NSC-752782"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "10127622": {
+    "cid": 10127622,
+    "title": "Selumetinib",
+    "iupac": "6-(4-bromo-2-chloroanilino)-7-fluoro-N-(2-hydroxyethoxy)-3-methylbenzimidazole-5-carboxamide",
+    "synonyms": [
+      "Selumetinib",
+      "606143-52-6",
+      "AZD6244",
+      "ARRY-142886",
+      "5-[(4-BROMO-2-CHLOROPHENYL)AMINO]-4-FLUORO-N-(2-HYDROXYETHOXY)-1-METHYL-1H-BENZIMIDAZOLE-6-CARBOXAMIDE",
+      "AZD 6244",
+      "AZD-6244",
+      "ARRY-886"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "11152667": {
+    "cid": 11152667,
+    "title": "Azd7762",
+    "iupac": "3-(carbamoylamino)-5-(3-fluorophenyl)-N-[(3S)-piperidin-3-yl]thiophene-2-carboxamide",
+    "synonyms": [
+      "AZD7762",
+      "AZD 7762",
+      "RefChem:560464",
+      "CHECKPOINT KINASE INHIBITOR AZD7762",
+      "860352-01-8",
+      "AZD-7762",
+      "(S)-5-(3-Fluorophenyl)-N-(piperidin-3-yl)-3-ureidothiophene-2-carboxamide",
+      "3-(Carbamoylamino)-5-(3-Fluorophenyl)-N-[(3s)-Piperidin-3-Yl]thiophene-2-Carboxamide"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "11524144": {
+    "cid": 11524144,
+    "title": "Dorsomorphin",
+    "iupac": "6-[4-(2-piperidin-1-ylethoxy)phenyl]-3-pyridin-4-ylpyrazolo[1,5-a]pyrimidine",
+    "synonyms": [
+      "dorsomorphin",
+      "866405-64-3",
+      "AMPK Inhibitor, Compound C",
+      "compound C dorsomorphin",
+      "10K52CIC1Z",
+      "4-(6-{4-[2-(piperidin-1-yl)ethoxy]phenyl}pyrazolo[1,5-a]pyrimidin-3-yl)pyridine",
+      "DTXSID401006988",
+      "(6-(4-(2-piperidin-1-ylethoxy)phenyl))-3-pyridin-4-ylpyrazolo(1,5-a)pyrimidine"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "15953870": {
+    "cid": 15953870,
+    "title": "KU-60019",
+    "iupac": "2-[(2R,6S)-2,6-dimethylmorpholin-4-yl]-N-[5-(6-morpholin-4-yl-4-oxopyran-2-yl)-9H-thioxanthen-2-yl]acetamide",
+    "synonyms": [
+      "KU-60019",
+      "925701-49-1",
+      "ku60019",
+      "KU 60019",
+      "2-[(2S,6R)-2,6-dimethylmorpholin-4-yl]-N-[5-(6-morpholin-4-yl-4-oxopyran-2-yl)-9H-thioxanthen-2-yl]acetamide",
+      "IAN358A69K",
+      "4-Morpholineacetamide, 2,6-dimethyl-N-(5-(6-(4-morpholinyl)-4-oxo-4H-pyran-2-yl)-9H-thioxanthen-2-yl)-, (2R,6S)-",
+      "2-((2S,6R)-2,6-dimethylmorpholin-4-yl)-N-(5-(6-morpholin-4-yl-4-oxopyran-2-yl)-9H-thioxanthen-2-yl)acetamide"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "17755052": {
+    "cid": 17755052,
+    "title": "Pictilisib",
+    "iupac": "4-[2-(1H-indazol-4-yl)-6-[(4-methylsulfonylpiperazin-1-yl)methyl]thieno[3,2-d]pyrimidin-4-yl]morpholine",
+    "synonyms": [
+      "957054-30-7",
+      "GDC-0941",
+      "PICTILISIB",
+      "Pictrelisib",
+      "GDC0941",
+      "4-(2-(1H-Indazol-4-yl)-6-((4-(methylsulfonyl)piperazin-1-yl)methyl)thieno[3,2-d]pyrimidin-4-yl)morpholine",
+      "GDC 0941",
+      "ICY00EMP8P"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "23725625": {
+    "cid": 23725625,
+    "title": "Olaparib",
+    "iupac": "4-[[3-[4-(cyclopropanecarbonyl)piperazine-1-carbonyl]-4-fluorophenyl]methyl]-2H-phthalazin-1-one",
+    "synonyms": [
+      "Olaparib",
+      "763113-22-0",
+      "Lynparza",
+      "AZD2281",
+      "AZD-2281",
+      "KU-0059436",
+      "AZD 2281",
+      "Olaparibum"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "24180719": {
+    "cid": 24180719,
+    "title": "Plx-4720",
+    "iupac": "N-[3-(5-chloro-1H-pyrrolo[2,3-b]pyridine-3-carbonyl)-2,4-difluorophenyl]propane-1-sulfonamide",
+    "synonyms": [
+      "918505-84-7",
+      "PLX-4720",
+      "PLX4720",
+      "PLX 4720",
+      "N-(3-(5-chloro-1H-pyrrolo[2,3-b]pyridine-3-carbonyl)-2,4-difluorophenyl)propane-1-sulfonamide",
+      "N-[3-[(5-Chloro-1H-pyrrolo[2,3-b]pyridin-3-yl)carbonyl]-2,4-difluorophenyl]-1-propanesulfonamide",
+      "N-[3-(5-chloro-1H-pyrrolo[2,3-b]pyridine-3-carbonyl)-2,4-difluorophenyl]propane-1-sulfonamide",
+      "EQY31RO8HA"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "24776445": {
+    "cid": 24776445,
+    "title": "Vismodegib",
+    "iupac": "2-chloro-N-(4-chloro-3-pyridin-2-ylphenyl)-4-methylsulfonylbenzamide",
+    "synonyms": [
+      "Vismodegib",
+      "879085-55-9",
+      "GDC-0449",
+      "2-chloro-N-(4-chloro-3-(pyridin-2-yl)phenyl)-4-(methylsulfonyl)benzamide",
+      "Erivedge",
+      "HhAntag691",
+      "GDC0449",
+      "vismodegibum"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "25021165": {
+    "cid": 25021165,
+    "title": "Jzl184",
+    "iupac": "(4-nitrophenyl) 4-[bis(1,3-benzodioxol-5-yl)-hydroxymethyl]piperidine-1-carboxylate",
+    "synonyms": [
+      "JZL184",
+      "JZL 184",
+      "RefChem:924025",
+      "1101854-58-3",
+      "JZL-184",
+      "4-nitrophenyl 4-(bis(benzo[d][1,3]dioxol-5-yl)(hydroxy)methyl)piperidine-1-carboxylate",
+      "4-nitrophenyl 4-[bis(2H-1,3-benzodioxol-5-yl)(hydroxy)methyl]piperidine-1-carboxylate",
+      "MFCD11976911"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "25262792": {
+    "cid": 25262792,
+    "title": "Vistusertib",
+    "iupac": "3-[2,4-bis[(3S)-3-methylmorpholin-4-yl]pyrido[2,3-d]pyrimidin-7-yl]-N-methylbenzamide",
+    "synonyms": [
+      "1009298-59-2",
+      "Vistusertib",
+      "AZD2014",
+      "AZD-2014",
+      "AZD 2014",
+      "0BSC3P4H5X",
+      "3-[2,4-bis[(3S)-3-methylmorpholin-4-yl]pyrido[2,3-d]pyrimidin-7-yl]-N-methylbenzamide",
+      "Benzamide, 3-[2,4-bis[(3S)-3-methyl-4-morpholinyl]pyrido[2,3-d]pyrimidin-7-yl]-N-methyl-"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "44415057": {
+    "cid": 44415057,
+    "title": "Actinomycin 7",
+    "iupac": "2-amino-4,6-dimethyl-3-oxo-1-N,9-N-bis[(3R,6S,7S,10S,16S)-7,11,14-trimethyl-2,5,9,12,15-pentaoxo-3,10-di(propan-2-yl)-8-oxa-1,4,11,14-tetrazabicyclo[14.3.0]nonadecan-6-yl]phenoxazine-1,9-dicarboxamide",
+    "synonyms": [
+      "Actinomycin 7",
+      "Acto-D",
+      "Actinomycin C(sub1)",
+      "Antibiotic from Streptomyces parvullus",
+      "X 97",
+      "Actinomycin-[threo-val-pro-sar-meval]",
+      "Actactinomycin A IV",
+      "Actinomycin I(sub1)"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "52913813": {
+    "cid": 52913813,
+    "title": "Azd-8186",
+    "iupac": "8-[(1R)-1-(3,5-difluoroanilino)ethyl]-N,N-dimethyl-2-morpholin-4-yl-4-oxochromene-6-carboxamide",
+    "synonyms": [
+      "AZD8186",
+      "1627494-13-6",
+      "AZD-8186",
+      "AZD 8186",
+      "AIQ4OWD0RA",
+      "4H-1-Benzopyran-6-carboxamide, 8-[(1R)-1-[(3,5-difluorophenyl)amino]ethyl]-N,N-dimethyl-2-(4-morpholinyl)-4-oxo-",
+      "4H-1-Benzopyran-6-carboxamide, 8-((1R)-1-((3,5-difluorophenyl)amino)ethyl)-N,N-dimethyl-2-(4-morpholinyl)-4-oxo-",
+      "8-[(1R)-1-[(3,5-difluorophenyl)amino]ethyl]-N,N-dimethyl-2-(morpholin-4-yl)-4-oxo-4H-chromene-6-carboxamide"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "54761306": {
+    "cid": 54761306,
+    "title": "Ceralasertib",
+    "iupac": "imino-methyl-[1-[6-[(3R)-3-methylmorpholin-4-yl]-2-(1H-pyrrolo[2,3-b]pyridin-4-yl)pyrimidin-4-yl]cyclopropyl]-oxo-lambda6-sulfane",
+    "synonyms": [
+      "Ceralasertib",
+      "1352226-88-0",
+      "AZD-6738",
+      "AZD 6738",
+      "CHEMBL4285417",
+      "(R)-imino(methyl)(1-(6-((R)-3-methylmorpholino)-2-(1H-pyrrolo[2,3-b]pyridin-4-yl)pyrimidin-4-yl)cyclopropyl)-l6-sulfanone",
+      "BDBM50468001",
+      "Ceralasertib (AZD6738)"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "58423153": {
+    "cid": 58423153,
+    "title": "Azd-1208",
+    "iupac": "(5Z)-5-[[2-[(3R)-3-aminopiperidin-1-yl]-3-phenylphenyl]methylidene]-1,3-thiazolidine-2,4-dione",
+    "synonyms": [
+      "AZD1208",
+      "1204144-28-4",
+      "AZD-1208",
+      "S98NFM1378",
+      "AZD 1208",
+      "RefChem:116029",
+      "AZD 1208.",
+      "(R,Z)-5-((2-(3-aminopiperidin-1-yl)-[1,1'-biphenyl]-3-yl)methylene)thiazolidine-2,4-dione"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "73013358": {
+    "cid": 73013358,
+    "title": "Y-39983 dihydrochloride 2/3 H2O",
+    "iupac": "4-[(1R)-1-aminoethyl]-N-(1H-pyrrolo[2,3-b]pyridin-4-yl)benzamide;hydrate;dihydrochloride",
+    "synonyms": [
+      "203911-26-6",
+      "Y-39983 dihydrochloride 2/3 H2O",
+      "Y-33075 (dihydrochloride hydrate)",
+      "SCHEMBL15006546"
+    ],
+    "source": "PubChem PUG REST"
+  },
+  "135398501": {
+    "cid": 135398501,
+    "title": "Akt inhibitor VIII",
+    "iupac": "3-[1-[[4-(6-phenyl-8H-imidazo[4,5-g]quinoxalin-7-yl)phenyl]methyl]piperidin-4-yl]-1H-benzimidazol-2-one",
+    "synonyms": [
+      "Akt inhibitor VIII",
+      "612847-09-3",
+      "Akti-1/2",
+      "YX4CPQ6V6X",
+      "Akt-I 1,2",
+      "1,3-Dihydro-1-(1-((4-(6-phenyl-1H-imidazo[4,5-g]quinoxalin-7-yl)phenyl)methyl)-4-piperidinyl)-2H-benzimidazol-2-one",
+      "3-[1-[[4-(7-phenyl-3H-imidazo[4,5-g]quinoxalin-6-yl)phenyl]methyl]piperidin-4-yl]-1H-benzimidazol-2-one",
+      "1-(1-(4-(6-Phenyl-1H-imidazo[4,5-g]quinoxalin-7-yl)benzyl)-piperidin-4-yl)-1H-benzo[d]imidazol-2(3H)-one"
+    ],
+    "source": "PubChem PUG REST"
+  }
+}

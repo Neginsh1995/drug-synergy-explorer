@@ -1,0 +1,14 @@
+{
+  "name": "uacc62-skin-pilot",
+  "private": true,
+  "type": "module",
+  "description": "Nightshift-only Markovian 5-unit cell-line-specific skin synergy literature pilot",
+  "scripts": {
+    "test": "vitest run --config vitest.config.ts",
+    "pilot": "tsx src/pilot.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0"
+  }
+}

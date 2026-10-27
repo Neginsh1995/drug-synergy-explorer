@@ -1,0 +1,9 @@
+order,pair_id,Drug1,Drug2,z_HSA,decision,evidence_class,score,rounds_used,reason
+"1","row 1","Azd7762","Ceralasertib","2.4281342524532703","keep","mechanistic_pathway_only","22","2","evidence_class=mechanistic_pathway_only, status=accepted"
+"2","row 2","Selumetinib","Azd-8186","1.4347033423376245","reject","synergy_other_model","42","1","direct_experimental_synergy=no"
+"3","row 3","Selumetinib","Pictilisib","1.2564245343229767","reject","synergy_other_model","32","1","direct_experimental_synergy=no"
+"4","row 4","4-Amino-1-[3,3-difluoro-4-hydroxy-5-(hydroxymethyl)-2-oxolanyl]-2-pyrimidinone","Azd7762","1.2321370642133977","keep","combination_effect_exact_cell","42","3","evidence_class=combination_effect_exact_cell, status=unresolved"
+"5","row 5","Azd-8186","Azd-1208","1.2142648969799645","reject","insufficient_or_conflicting","2","1","evidence_class=insufficient_or_conflicting is not synergy evidence (mode=include_mechanistic)"
+"6","row 6","Pictilisib","Vistusertib","1.094893969273947","keep","mechanistic_pathway_only","22","1","evidence_class=mechanistic_pathway_only, status=accepted"
+"7","row 7","KU-60019","Ceralasertib","1.076607168758026","keep","mechanistic_pathway_only","12","1","evidence_class=mechanistic_pathway_only, status=accepted"
+"8","row 8","KU-60019","Olaparib","1.0671672849900766","reject","synergy_other_model","42","2","direct_experimental_synergy=no"

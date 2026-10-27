@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SynergyTumor Board</title>
+<meta name="description" content="SynergyTumor Board prioritises promising drug combinations using AI prediction, uncertainty filtering and biological evidence analysis.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050d26; --panel:#0a1638; --panel-2:#0e1d47; --line:rgba(160,190,255,.16); --line-2:rgba(160,190,255,.28);
+  --ink:#eef3ff; --muted:#9fb0d4; --faint:#6f80a8; --accent:#5ea2ff; --ok:#38d9a9; --warn:#ffc078; --bad:#ff8787;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:radial-gradient(1100px 600px at 50% -200px,#0f2766 0%,transparent 70%),var(--bg);
+  font:15px/1.55 "Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;min-height:100vh}
+a{color:#8cc4ff}
+button,select{font:inherit}
+.wrap{max-width:1360px;margin:0 auto;padding:0 24px}
+
+/* header */
+.top{padding:26px 0 8px;text-align:center}
+.top h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}
+.top h2{margin:2px 0 6px;font-size:16px;font-weight:600;color:#9fd0ff}
+.top p{margin:0 auto;max-width:760px;color:var(--muted);font-size:14.5px}
+
+/* layout */
+.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:start;margin-top:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h3{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#8fb3ec}
+.left{display:grid;gap:16px;position:sticky;top:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;font-weight:700;color:#cfdcf5;margin-bottom:6px}
+select{width:100%;padding:10px 12px;border-radius:10px;color:#fff;background:#071131;border:1px solid var(--line-2)}
+select:disabled{opacity:.5}
+select:focus{outline:2px solid rgba(94,162,255,.45);border-color:var(--accent)}
+.run{width:100%;padding:11px 14px;border:0;border-radius:10px;font-weight:700;color:#fff;background:#3b6ef5;cursor:pointer}
+.run:hover{background:#4a7bff}.run:disabled{background:#2a3b6e;color:#9fb0d4;cursor:not-allowed}
+.mode{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--line-2);font-size:12px;font-weight:700;color:#cfe4ff}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.chip.explore i{background:#9fd0ff}.chip.running i{background:var(--warn)}.chip.done i{background:var(--ok)}
+.status{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+
+/* funnels */
+.funnels{display:grid;gap:6px;margin-bottom:12px}
+.funnel{position:relative;display:block;width:100%;border:0;background:none;padding:0;cursor:pointer;text-align:left;color:var(--ink)}
+.funnel:disabled{cursor:default}
+.funnel .shape{height:38px;margin:0 auto;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,14px 100%);
+  background:linear-gradient(90deg,rgba(94,162,255,.20),rgba(94,162,255,.32));border-radius:2px;transition:background .25s}
+.funnel:nth-child(1) .shape{width:100%}.funnel:nth-child(2) .shape{width:84%}.funnel:nth-child(3) .shape{width:68%}
+.funnel .lbl{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 30px;font-size:12.5px;font-weight:700}
+.funnel:nth-child(2) .lbl{padding:0 calc(8% + 24px)}.funnel:nth-child(3) .lbl{padding:0 calc(16% + 18px);font-size:12px}
+.funnel .lbl span:first-child{white-space:nowrap}
+.funnel .n{font-variant-numeric:tabular-nums;color:#fff}
+.funnel.pending .shape{background:rgba(255,255,255,.05)}.funnel.pending .lbl{color:var(--faint)}
+.funnel.active .shape{background:linear-gradient(90deg,rgba(255,192,120,.22),rgba(255,192,120,.36))}
+.funnel.open .shape{background:linear-gradient(90deg,rgba(56,217,169,.25),rgba(56,217,169,.42))}
+.funnel:not(:disabled):hover .shape{filter:brightness(1.25)}
+.fsub{font-size:11.5px;color:var(--faint);text-align:center;margin:-2px 0 2px}
+
+/* message log */
+.log{display:grid;gap:10px;max-height:560px;overflow:auto;padding-right:2px}
+.log:empty::before{content:"Messages from Zetaris and the agents appear here when the pipeline runs.";color:var(--faint);font-size:13px}
+.msg{border-left:2px solid var(--line-2);padding:2px 0 2px 10px;font-size:13px}
+.msg b{display:block;font-size:13px;color:#e3ecff}
+.msg .meta{color:var(--muted)}
+.msg.zetaris{border-color:#5ea2ff}.msg.agent{border-color:#3bc9db}.msg.note{border-color:var(--faint)}
+.msg details{margin-top:4px}
+.msg summary{cursor:pointer;color:#8cc4ff;font-size:12.5px}
+.msg pre{margin:6px 0 0;padding:8px;border-radius:8px;background:#030a22;border:1px solid var(--line);color:#cfe4ff;font:11.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}
+.msg ul{margin:4px 0 0;padding-left:16px;color:#cfdcf5}
+.msg li{margin:2px 0}
+.live{max-height:380px;overflow:auto;margin-top:6px;padding:8px;border-radius:8px;background:#030a22;border:1px solid var(--line);font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#9fb0d4;white-space:pre-wrap;word-break:break-word}
+.live .ns{color:#7ee0f0}.live .keep{color:#63e6be;font-weight:700}.live .reject{color:#ff9f9f}.live .unit{color:#fff;margin-top:4px}.live .zet{color:#9fd0ff}
+.dec{font-weight:700}.dec.keep{color:var(--ok)}.dec.reject{color:var(--bad)}.dec.review{color:var(--warn)}
+
+/* workflow (the original interactive component) */
+.center{display:grid;gap:14px;justify-items:center}
+.stage2-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.stage2{position:relative;width:min(100%,640px);aspect-ratio:1/1}
+.stage2 svg{display:block;width:100%;height:100%;overflow:visible}
+#flowSvg text{font-family:"Inter","Segoe UI",system-ui,sans-serif}
+.layer{transition:opacity .7s ease}.layer.past{opacity:.5}.layer.next{opacity:.2}.layer.now,.layer.hov{opacity:1!important}
+.layer.L1.past,.layer.L1.next{opacity:.9}  /* inputs stay readable: grey must only mean missing data */
+.glabel{font-size:14px;font-weight:800;letter-spacing:2.2px}
+.nlab{font-size:11px;font-weight:700;fill:#dbe6ff}.nlab.miss{fill:#7d879e}
+.netlab{font-size:12px;font-weight:700;fill:#eaf2ff;stroke:#071640;stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+.plab{font-size:12.5px;font-weight:800;letter-spacing:1.6px;fill:#ffe066;stroke:#0a1a48;stroke-width:3px;paint-order:stroke}
+.plab2{font-size:11px;font-weight:600;fill:#fff3bf;stroke:#0a1a48;stroke-width:3px;paint-order:stroke}
+.alab{font-size:11.5px;font-weight:800;stroke:#06143a;stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+.atop{font-size:10.5px;font-weight:700;letter-spacing:1px;fill:#cfe4ff;stroke:#06143a;stroke-width:3.5px;paint-order:stroke}
+.elab{font-size:10px;font-weight:800;letter-spacing:1.6px;fill:#d0bfff;stroke:#06143a;stroke-width:3px;paint-order:stroke}
+.rlab{font-size:9.6px;font-weight:800;letter-spacing:1px;fill:#d8f5a2}
+.ctag{font-size:10.5px;font-weight:800;fill:#fff}
+.bubt{font-size:13px;font-weight:900;fill:#06143a}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-slow{transform-box:view-box;transform-origin:430px 430px;animation:spin 70s linear infinite}
+.spin-rev{transform-box:view-box;transform-origin:430px 430px;animation:spin 110s linear infinite reverse}
+.lane{stroke-dasharray:2 9;animation:laneflow 1.6s linear infinite}
+.hyp{stroke-dasharray:4 4;animation:laneflow 1.2s linear infinite}
+@keyframes laneflow{to{stroke-dashoffset:-22}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:npulse 2.6s ease-in-out infinite}
+@keyframes npulse{0%,100%{opacity:0;transform:scale(1)}50%{opacity:.8;transform:scale(1.32)}}
+.bubble{opacity:0;transition:opacity .35s}.bubble.on{opacity:1}
+.hit{fill:transparent;cursor:pointer;outline:none}
+.hit:focus-visible{stroke:#9fd0ff;stroke-width:2;stroke-dasharray:4 4}
+.tip{position:absolute;z-index:6;max-width:280px;padding:10px 13px;border-radius:12px;pointer-events:none;font-size:13.5px;line-height:1.5;color:#dbe6ff;
+  background:rgba(4,14,42,.97);border:1px solid var(--tc,rgba(94,162,255,.55))}
+.tip b{display:block;color:var(--tc,#9fd0ff);font-size:14px;margin-bottom:2px}.tip span{display:block}
+.tip em{display:block;margin-top:6px;font-style:normal;font-size:12px;font-weight:700;color:#9fd0ff}
+
+/* stage box under the workflow */
+.stage-cap{width:min(100%,640px);padding:14px 16px;border-radius:14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cc,#5ea2ff)}
+.cap-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:2px}
+.cap-step{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--cc,#7fbaff)}
+.cap-ctrl{display:flex;gap:6px}
+.cap-ctrl button{min-width:32px;height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#e6efff;font-size:13px;font-weight:700;cursor:pointer}
+.cap-ctrl button:hover{background:rgba(255,255,255,.12)}
+#capTitle{display:block;font-size:16px;color:#fff}
+#capText{margin:3px 0 0;font-size:14px;color:#cfdcf5}
+#capLink{display:none}
+.cap-dots{display:flex;gap:5px;margin-top:10px}
+.cap-dots button{flex:1;height:5px;border-radius:3px;border:0;padding:0;background:rgba(255,255,255,.12);cursor:pointer}
+.cap-dots button.on{background:var(--dc)}
+.tracker{display:flex;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.tracker li{flex:1;list-style:none;font-size:11.5px;line-height:1.3;color:var(--faint);padding-top:8px;border-top:3px solid rgba(255,255,255,.1)}
+.tracker li.done{color:#bfe9d8;border-color:var(--ok)}
+.tracker li.active{color:#fff;border-color:var(--warn);font-weight:700}
+.tracker{padding-left:0;margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;width:min(100%,640px);font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.legend i.miss{background:#1c2234;border:1.5px dashed #8a94ab}
+
+/* exploration card and modalities */
+.explore{width:min(100%,640px)}
+.explore[hidden]{display:none}
+.explore .head{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.explore h4{margin:0;font-size:16px;color:var(--ec,#9fd0ff)}
+.explore .x{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1}
+.explore dl{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin:10px 0 0;font-size:14px}
+.explore dt{color:var(--muted);font-weight:700}.explore dd{margin:0;color:#dfe8fb}
+.mods{width:min(100%,640px)}
+.modrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.modrow .who{font-size:12.5px;font-weight:800;color:var(--muted);width:100%}
+.mchip{padding:3px 9px;border-radius:8px;font-size:12.5px;border:1px solid var(--line-2);color:#dfe8fb;background:rgba(255,255,255,.03)}
+.mchip.drug{border-color:rgba(77,171,247,.55);background:rgba(77,171,247,.12)}.mchip.cell_line{border-color:rgba(99,230,190,.55);background:rgba(99,230,190,.1)}
+.mchip.has::before{content:"✓ ";color:var(--ok);font-weight:800}
+.mchip small{color:var(--faint)}
+.mchip.off{color:#8a94ab;border:1px dashed #8a94ab;background:#1c2234}.mchip.off::after{content:" · no data";font-size:11.5px}
+.mnote{font-size:12px;color:var(--faint);margin:8px 0 0}
+
+/* tables */
+.tablearea{margin-top:24px}
+.tablearea[hidden]{display:none}
+.thead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.thead h3{margin:0}
+.thead p{margin:0;color:var(--muted);font-size:13.5px}
+.tscroll{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--panel-2);text-align:left;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;color:#9fbbe8;font-weight:800}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+tr.filtered td{color:var(--faint)}
+.st{display:inline-block;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:800;white-space:nowrap}
+.st.keep{background:rgba(56,217,169,.14);color:#b6f5df}.st.reject{background:rgba(255,135,135,.13);color:#ffd0d0}
+.st.review{background:rgba(255,192,120,.14);color:#ffe0b8}.st.wait{background:rgba(255,255,255,.07);color:var(--muted)}
+.more{margin-top:10px;padding:7px 12px;border-radius:8px;border:1px solid var(--line-2);background:none;color:#cfe4ff;cursor:pointer;font-size:13px}
+
+/* final results */
+.results{margin:24px 0 40px}
+.results[hidden]{display:none}
+.rcard{border:1px solid var(--line);border-radius:14px;background:var(--panel);margin-top:10px}
+.rcard>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:14px 16px}
+.rcard>summary::-webkit-details-marker{display:none}
+.rank{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.07);font-weight:800}
+.rcard .pair{font-weight:700}.rcard .sub{display:block;font-size:12.5px;color:var(--muted);font-weight:500}
+.rbody{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0 16px 16px}
+.rbody section{border-top:1px solid var(--line);padding-top:10px}
+.rbody h5{margin:0 0 6px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#8fb3ec}
+.rbody p,.rbody li{margin:0 0 6px;font-size:13.5px;color:#dfe8fb}
+.rbody ul{margin:0;padding-left:16px}
+.rbody .k{color:var(--muted)}
+.rbody details{margin-top:6px}.rbody summary{cursor:pointer;color:#8cc4ff;font-size:13px}
+.genes{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0 8px}
+.genes span{font-size:12px;padding:1px 7px;border-radius:6px;background:rgba(94,162,255,.12);border:1px solid rgba(94,162,255,.3)}
+.genes span.shared{background:rgba(56,217,169,.15);border-color:rgba(56,217,169,.45)}
+footer{border-top:1px solid var(--line);padding:16px 0 26px;color:var(--faint);font-size:12.5px;text-align:center}
+/* layout: a smaller workflow, larger inputs (left) and outcomes (log, tables, overview) */
+.wrap{max-width:1480px}
+.grid{grid-template-columns:470px minmax(0,1fr)}
+.stage2{width:min(100%,500px)}
+.stage-cap,.legend,.explore,.mods{width:min(100%,620px)}
+.panel{padding:22px}
+.panel h3{font-size:14px}
+.field label{font-size:15px}
+select{font-size:16px;padding:12px 14px}
+.run{font-size:16px;padding:13px 16px}
+.mode,.status{font-size:14px}
+.funnel .shape{height:48px}
+.funnel .lbl{font-size:14.5px}
+.funnel:nth-child(3) .lbl{font-size:14px}
+.fsub{font-size:13px}
+.log{max-height:640px}
+.msg,.msg b{font-size:14.5px}
+.msg summary{font-size:14px}
+.msg pre{font-size:12.5px}
+.thead h3{font-size:15px}
+.thead p{font-size:15px}
+table{font-size:14.5px}
+th{font-size:12.5px}
+th,td{padding:10px 12px}
+.rcard .pair{font-size:16.5px}
+.rcard .sub{font-size:14px}
+.rbody h5{font-size:13px}
+.rbody p,.rbody li{font-size:15px}
+.genes span{font-size:13.5px}
+.st{font-size:12.5px}
+@media (max-width:1100px){.grid{grid-template-columns:1fr}.left{position:static}.rbody{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="bot" viewBox="0 0 64 64">
+   <line x1="32" y1="6" x2="32" y2="14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+   <circle cx="32" cy="6" r="3.5" fill="currentColor"/>
+   <rect x="10" y="14" width="44" height="34" rx="12" fill="#0b1f55" stroke="currentColor" stroke-width="3"/>
+   <rect x="16" y="21" width="32" height="18" rx="8" fill="#030c26"/>
+   <circle cx="25" cy="30" r="4" fill="currentColor"><animate attributeName="r" values="4;4;0.6;4" keyTimes="0;.9;.95;1" dur="4s" repeatCount="indefinite"/></circle>
+   <circle cx="39" cy="30" r="4" fill="currentColor"><animate attributeName="r" values="4;4;0.6;4" keyTimes="0;.9;.95;1" dur="4s" repeatCount="indefinite"/></circle>
+   <path d="M26 43 q6 4 12 0" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+   <rect x="4" y="25" width="6" height="12" rx="3" fill="currentColor"/>
+   <rect x="54" y="25" width="6" height="12" rx="3" fill="currentColor"/>
+   <rect x="20" y="50" width="24" height="9" rx="4" fill="currentColor" opacity=".55"/>
+  </symbol>
+ </defs>
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ 
+ <symbol id="i-sigma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5H6l6 7-6 7h12"/></symbol>
+ <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19c4 0 5-13 10-13s6 13 10 13"/><path d="M8 19v-3M16 19v-3" opacity=".7"/></symbol>
+ <symbol id="i-mol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 4v8l-7 4-7-4V7z"/><path d="M12 7.5l3.5 2v4L12 15.5l-3.5-2v-4z" opacity=".75"/></symbol>
+ <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h3l2-6 4 12 3-9 2 3h4"/></symbol>
+ <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></symbol>
+ <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></symbol>
+ <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></symbol>
+ <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+ <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+ <symbol id="i-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6"/></symbol>
+ <symbol id="i-report" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></symbol>
+ <symbol id="i-assay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="8" cy="10" r="1.3" fill="currentColor"/><circle cx="12" cy="10" r="1.3"/><circle cx="16" cy="10" r="1.3" fill="currentColor"/><circle cx="8" cy="14.5" r="1.3"/><circle cx="12" cy="14.5" r="1.3" fill="currentColor"/><circle cx="16" cy="14.5" r="1.3"/></symbol>
+ <symbol id="i-cell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c4.8 0 8.5 3.3 8.5 8.2 0 4.6-3.6 8.8-8.9 8.8C6.8 20.5 3.5 17 3.5 12.3 3.5 7.4 7.2 3.5 12 3.5z"/><circle cx="11.5" cy="12" r="3.2"/><circle cx="16.5" cy="8" r=".9" fill="currentColor"/><circle cx="7.5" cy="16" r=".9" fill="currentColor"/></symbol>
+ <symbol id="i-dna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3c0 5 8 4 8 9s-8 4-8 9"/><path d="M16 3c0 5-8 4-8 9s8 4 8 9"/><path d="M9.6 6.5h4.8M9.6 17.5h4.8" opacity=".75"/></symbol>
+ <symbol id="i-path" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="18.5" r="2.2"/><path d="M6.7 7.4l3.6 3.2M17.3 7.4l-3.6 3.2M10.6 13.6l-3.2 3.8M13.6 13.6l2.9 3.2"/></symbol>
+ <symbol id="i-crispr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.6 8.6L20 18M8.6 15.4L20 6"/></symbol>
+ <symbol id="i-net" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4.5" cy="7" r="2"/><circle cx="4.5" cy="17" r="2"/><circle cx="12" cy="4.5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19.5" r="2"/><circle cx="19.5" cy="12" r="2"/><path d="M6.4 6.4l3.7-1.3M6.3 8l3.9 3M6.3 16l3.9-3M6.4 17.6l3.7 1.3M13.8 5.5l4.2 5M14 12h3.5M13.8 18.5l4.2-5"/></symbol>
+ <symbol id="i-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.4 4.3-7 8-7s7 2.6 8 7"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M8 7.5h8M8 11h6"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <header class="top">
+    <h1>SynergyTumor Board</h1>
+    <h2>From AI Prediction to Clinician-Ready Evidence</h2>
+    <p>Prioritises promising drug combinations for a cancer cell line: AI-predicted synergy, filtered for model uncertainty, then reviewed against biological evidence by an agent pipeline.</p>
+  </header>
+
+  <div class="grid">
+    <aside class="left">
+      <section class="panel" aria-label="Tissue and cell line">
+        <h3>Select</h3>
+        <div class="field"><label for="tissue">Tissue type</label>
+          <select id="tissue" disabled><option value="">Loading from Zetaris…</option></select></div>
+        <div class="field"><label for="cell">Cell line</label>
+          <select id="cell" disabled><option value="">Choose a tissue first</option></select></div>
+        <button class="run" id="runBtn" type="button" disabled>Run pipeline</button>
+        <div class="mode"><span class="chip explore" id="modeChip"><i></i>Exploration mode</span><span id="cellInfo"></span></div>
+        <p class="status" id="status"></p>
+      </section>
+
+      <section class="panel" aria-label="Filtering stages">
+        <h3>Process</h3>
+        <div class="funnels">
+          <button class="funnel pending" id="f1" type="button" disabled><div class="shape"></div><div class="lbl"><span>Model-predicted synergistic pairs</span><span class="n" id="n1">–</span></div></button>
+          <button class="funnel pending" id="f2" type="button" disabled><div class="shape"></div><div class="lbl"><span>Uncertainty filter</span><span class="n" id="n2">–</span></div></button>
+          <button class="funnel pending" id="f3" type="button" disabled><div class="shape"></div><div class="lbl"><span>Multi-agent evidence review</span><span class="n" id="n3">–</span></div></button>
+        </div>
+        <p class="fsub" id="fsub">Click a stage to see its table.</p>
+        <div class="log" id="log" aria-live="polite"></div>
+      </section>
+    </aside>
+
+    <main class="center">
+      <div class="stage2-wrap" id="stage">
+      <div class="stage2" id="stage2">
+        <svg id="flowSvg" viewBox="0 0 860 860" role="group" aria-label="Circular diagram of the framework. Information flows from the outer ring to the centre: drug and cell information, the multimodal neural network, the quantitative prediction with uncertainty, two collaborating AI agents, biological evidence, quantitative ranking and reports, and the clinician or researcher at the centre. Each ring links to an explainer page.">
+          <defs id="flowDefs">
+            <filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glowBig" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="bgDisc" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#123a8f" stop-opacity=".55"/><stop offset=".75" stop-color="#0a2160" stop-opacity=".35"/><stop offset="1" stop-color="#06143a" stop-opacity="0"/></radialGradient>
+            <radialGradient id="clinBg" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#2c63d6"/><stop offset=".55" stop-color="#163b94"/><stop offset="1" stop-color="#0b2160"/></radialGradient>
+            <linearGradient id="clinSheen" x1="0" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            <clipPath id="clinClip"><circle cx="430" cy="430" r="90"/></clipPath>
+          </defs>
+          <circle cx="430" cy="430" r="428" fill="url(#bgDisc)"/>
+          <circle cx="430" cy="430" r="428" fill="none" stroke="rgba(140,196,255,.2)" stroke-dasharray="3 7"/>
+          <g class="spin-slow"><circle cx="430" cy="430" r="428" fill="none" stroke="rgba(94,162,255,.9)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="210 2480"/>
+            <circle cx="430" cy="430" r="428" fill="none" stroke="rgba(56,217,169,.6)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="120 2570" stroke-dashoffset="-1340"/></g>
+          <g id="gLanes"></g>
+          <g class="layer L1" id="gL1"></g>
+          <g class="layer L2" id="gL2"></g>
+          <g class="layer L3" id="gL3"></g>
+          <g class="layer L4" id="gL4"></g>
+          <g class="layer L5" id="gL5"></g>
+          <g class="layer L6" id="gL6"></g>
+          <g class="layer L7" id="gL7">
+            <circle cx="430" cy="430" r="94" fill="none" stroke="#5ea2ff" stroke-opacity=".45" stroke-width="2"/>
+            <circle cx="430" cy="430" r="90" fill="url(#clinBg)" filter="url(#glowBig)"/>
+            <g clip-path="url(#clinClip)"><svg x="340" y="342" width="180" height="180" viewBox="0 0 300 300" aria-hidden="true"><defs>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3c7a3"/><stop offset="1" stop-color="#dfa47e"/></linearGradient>
+  <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d5e1f5"/></linearGradient>
+  <linearGradient id="scrub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2bb3a3"/><stop offset="1" stop-color="#14857a"/></linearGradient>
+  <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a22"/><stop offset="1" stop-color="#1f1510"/></linearGradient>
+ </defs>
+ <!-- hair back -->
+ <path d="M92 128 C86 70 120 44 152 44 C190 44 216 72 210 130 C214 170 206 200 196 214 L104 214 C94 196 88 168 92 128Z" fill="url(#hair)"/>
+ <!-- body / coat -->
+ <path d="M38 300 C40 248 70 222 112 212 L188 212 C230 222 260 248 262 300Z" fill="url(#coat)"/>
+ <!-- scrubs V -->
+ <path d="M122 212 L150 262 L178 212Z" fill="url(#scrub)"/>
+ <!-- lapels -->
+ <path d="M112 212 L150 270 L132 300 L96 300 L100 236Z" fill="#eef3fb" stroke="#c4d2ea" stroke-width="1.5"/>
+ <path d="M188 212 L150 270 L168 300 L204 300 L200 236Z" fill="#eef3fb" stroke="#c4d2ea" stroke-width="1.5"/>
+ <!-- neck -->
+ <path d="M132 186 L168 186 L170 216 Q150 232 130 216Z" fill="#d99c77"/>
+ <!-- ears -->
+ <ellipse cx="99" cy="138" rx="9" ry="14" fill="#e3ab86"/><ellipse cx="201" cy="138" rx="9" ry="14" fill="#e3ab86"/>
+ <!-- face -->
+ <path d="M100 124 C100 82 122 64 150 64 C178 64 200 82 200 124 C200 164 180 196 150 196 C120 196 100 164 100 124Z" fill="url(#skin)"/>
+ <!-- hair front -->
+ <path d="M98 122 C96 82 124 56 156 58 C186 60 206 86 202 120 C192 98 176 84 150 86 C132 88 112 100 98 122Z" fill="url(#hair)"/>
+ <!-- brows -->
+ <path d="M118 116 Q130 109 141 115" stroke="#2a1d16" stroke-width="4" fill="none" stroke-linecap="round"/>
+ <path d="M159 115 Q170 109 182 116" stroke="#2a1d16" stroke-width="4" fill="none" stroke-linecap="round"/>
+ <!-- eyes -->
+ <ellipse cx="130" cy="131" rx="6.5" ry="7" fill="#fff"/><ellipse cx="170" cy="131" rx="6.5" ry="7" fill="#fff"/>
+ <circle cx="131" cy="132" r="4.2" fill="#2b3f66"/><circle cx="171" cy="132" r="4.2" fill="#2b3f66"/>
+ <circle cx="132.5" cy="130.5" r="1.4" fill="#fff"/><circle cx="172.5" cy="130.5" r="1.4" fill="#fff"/>
+ <!-- glasses -->
+ <rect x="113" y="119" width="34" height="25" rx="10" fill="rgba(160,210,255,.12)" stroke="#1d2b4a" stroke-width="3"/>
+ <rect x="153" y="119" width="34" height="25" rx="10" fill="rgba(160,210,255,.12)" stroke="#1d2b4a" stroke-width="3"/>
+ <path d="M147 128 Q150 125 153 128" stroke="#1d2b4a" stroke-width="3" fill="none"/>
+ <!-- nose / mouth / cheeks -->
+ <path d="M150 140 Q146 156 151 160" stroke="#c4875f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <path d="M134 171 Q150 183 166 171" stroke="#a3524a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+ <ellipse cx="121" cy="160" rx="9" ry="5" fill="#f19a8a" opacity=".35"/><ellipse cx="179" cy="160" rx="9" ry="5" fill="#f19a8a" opacity=".35"/>
+ <!-- stethoscope -->
+ <path d="M118 214 C110 240 116 262 136 268" stroke="#22324f" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <path d="M182 214 C192 242 186 262 166 268" stroke="#22324f" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <path d="M136 268 Q150 276 166 268" stroke="#22324f" stroke-width="5" fill="none"/>
+ <path d="M151 274 L151 288" stroke="#22324f" stroke-width="5"/>
+ <circle cx="151" cy="292" r="9" fill="#9aa9c4" stroke="#22324f" stroke-width="3"/>
+ <!-- badge -->
+ <rect x="206" y="246" width="34" height="22" rx="4" fill="#5ea2ff"/><rect x="211" y="252" width="24" height="3" rx="1.5" fill="#fff"/><rect x="211" y="259" width="16" height="3" rx="1.5" fill="#dbe9ff"/></svg></g>
+            <circle cx="430" cy="430" r="90" fill="url(#clinSheen)"/>
+            <rect x="375" y="473" width="110" height="21" rx="10.5" fill="rgba(6,20,58,.93)" stroke="rgba(94,162,255,.65)"/>
+            <text x="430" y="487.5" text-anchor="middle" class="ctag">Human in the loop</text>
+          </g>
+          <g id="gParticles" pointer-events="none"></g>
+          <g id="gHits"></g>
+        </svg>
+        <div class="tip" id="stageTip" role="tooltip" hidden></div>
+      </div>
+
+        <div class="stage-cap" id="stageCap" aria-live="polite">
+          <div class="cap-top"><span class="cap-step" id="capStep">All stages</span>
+            <div class="cap-ctrl"><button type="button" id="capPrev" aria-label="Previous stage">&#8249;</button><button type="button" id="capPlay" aria-label="Pause the animation">&#10074;&#10074;</button><button type="button" id="capNext" aria-label="Next stage">&#8250;</button><button type="button" id="capAll">All</button></div></div>
+          <b id="capTitle"></b>
+          <p id="capText"></p>
+          <a id="capLink" href="#">details</a>
+          <div class="cap-dots" id="capDots"></div>
+          <ol class="tracker" id="tracker" aria-label="Pipeline stages"></ol>
+        </div>
+        <div class="legend">
+          <span><i style="--c:#4dabf7"></i>Drug 1</span><span><i style="--c:#f783ac"></i>Drug 2</span><span><i style="--c:#63e6be"></i>Cancer cell line</span>
+          <span><i class="miss"></i>Grey: no data in the files for the selected pair</span>
+        </div>
+      </div>
+      <section class="panel explore" id="explore" hidden>
+        <div class="head"><h4 id="exTitle"></h4><button class="x" id="exClose" type="button" aria-label="Close">×</button></div>
+        <dl id="exBody"></dl>
+      </section>
+      <section class="panel mods" id="mods" aria-label="Modalities used"><h3>Modalities used by the model</h3><div id="modBody" class="mnote">Reading the modality files…</div></section>
+    </main>
+  </div>
+
+  <section class="panel tablearea" id="tableArea" hidden>
+    <div class="thead"><h3 id="tTitle"></h3><p id="tNote"></p></div>
+    <div class="tscroll"><table id="tTable"></table></div>
+    <button class="more" id="tMore" type="button" hidden>Show more</button>
+  </section>
+
+  <section class="results" id="results" hidden>
+    <div class="thead"><h3 style="font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#8fb3ec">Clinician-ready overview</h3><p id="rNote"></p></div>
+    <div id="rList"></div>
+  </section>
+</div>
+<footer>Decision support for research, not a treatment recommendation. Data: Zetaris · Agents: Meterless Markovian engine through Nightshift.</footer>
+
+<script>
+/* ---------- v2: the multilayer circle (built here; information flows from the outer ring to the centre) ---------- */
+(() => {
+'use strict';
+const svg = document.getElementById('flowSvg');
+if (!svg) return;
+const NS = 'http://www.w3.org/2000/svg', C = 430;
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const byId = id => document.getElementById(id);
+const defs = byId('flowDefs');
+const rad = d => (d - 90) * Math.PI / 180;                 // 0 deg = top, clockwise
+const P = (r, d) => [C + r * Math.cos(rad(d)), C + r * Math.sin(rad(d))];
+const q = v => Math.round(v * 100) / 100;
+function mk(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const isTop = d => { const m = ((d % 360) + 360) % 360; return m <= 90 || m >= 270; };
+function arcD(r, a0, a1, ccw) {
+  const [x0, y0] = P(r, a0), [x1, y1] = P(r, a1), big = a1 - a0 > 180 ? 1 : 0;
+  return ccw ? `M${q(x1)} ${q(y1)}A${r} ${r} 0 ${big} 0 ${q(x0)} ${q(y0)}`
+             : `M${q(x0)} ${q(y0)}A${r} ${r} 0 ${big} 1 ${q(x1)} ${q(y1)}`;
+}
+let uid = 0;
+// Text along a ring, centred on an angle; text in the lower half runs the other way so it stays upright.
+function arcText(parent, r, centre, span, text, cls, fill) {
+  const id = 'fp' + uid++;
+  mk('path', { id, d: arcD(r, centre - span, centre + span, !isTop(centre)), fill: 'none' }, defs);
+  const t = mk('text', { class: cls, dy: '0.35em', 'text-anchor': 'middle', fill }, parent);
+  mk('textPath', { href: '#' + id, startOffset: '50%' }, t).textContent = text;
+  return t;
+}
+const ringD = r => `M${C - r} ${C}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+const annulus = (r0, r1) => ringD(r1) + (r0 > 0 ? ringD(r0) : '');
+const midAngle = (a, b) => {
+  const x = Math.sin(a * Math.PI / 180) + Math.sin(b * Math.PI / 180), y = Math.cos(a * Math.PI / 180) + Math.cos(b * Math.PI / 180);
+  return Math.atan2(x, y) * 180 / Math.PI;
+};
+
+const COL = { d1: '#4dabf7', d2: '#f783ac', cell: '#63e6be', net: '#cfe4ff', pred: '#ffd43b', ex: '#3bc9db', fe: '#ffa94d',
+              ev: '#b197fc', rk: '#a9e34b', hu: '#5ea2ff', miss: '#8a94ab' };
+// The model's input modalities are read from the project files by the back end (/modalities) and
+// passed in with SynergyRing.setModalities(); nothing about them is fixed here.
+const ICONS = { drug_chemberta: 'i-mol', drug_rdkit: 'i-mol', Genetic_Signature: 'i-wave', Morphology: 'i-cell', missing_Bioassay: 'i-assay',
+                BROAD_DepMap_gene_expression_Drug_Targets: 'i-dna', gene_expression_data_lenient: 'i-path', CELL_CRSPR: 'i-crispr' };
+const SHORT = { drug_chemberta: 'ChemBERTa', drug_rdkit: 'RDKit', Genetic_Signature: 'Genetic signature', Morphology: 'Morphology', missing_Bioassay: 'Bioassay',
+                BROAD_DepMap_gene_expression_Drug_Targets: 'Expr. (targets)', gene_expression_data_lenient: 'Expr. (lenient)', CELL_CRSPR: 'CRISPR' };
+const spread = (lo, hi, n) => n === 1 ? [(lo + hi) / 2] : Array.from({ length: n }, (_, i) => lo + i * (hi - lo) / (n - 1));
+let GROUPS = [];
+const STAGES = [null,
+  { t: 'Drug and cell information', c: COL.d1, href: 'explainers/inputs.html',
+    tip: 'Information about Drug 1, Drug 2 and the cancer cell line, kept separate. Grey nodes: data not available in this example, not zero activity.',
+    x: 'Drug 1, Drug 2 and the cancer cell line each bring their own data: chemical structure, lab assays, drug-induced gene activity and cell images for each drug; gene expression and CRISPR dependency for the cell. Grey means the data is not available, not that there is no activity.' },
+  { t: 'Multimodal neural network', c: '#74c0fc', href: 'explainers/model.html#network',
+    tip: 'Summarises each type of data, lets them inform each other and learns how the drugs interact in this cell. Trained once; it is not retrained for each prediction.',
+    x: 'A pretrained network summarises each type of data, lets them inform each other and learns how the two drugs interact in this cancer cell. Missing data is switched off, not guessed. The network was trained once and is not retrained for each prediction.' },
+  { t: 'Quantitative prediction with uncertainty', c: COL.pred, href: 'explainers/model.html#scores',
+    tip: 'How strongly the pair is predicted to work together, and how sure the model is about it.',
+    x: 'The model scores how strongly the two drugs should work together in this cell, and how sure it is about every score. Open the model details to see what is predicted and how the uncertainty is measured.' },
+  { t: 'Collaborating AI agents', c: COL.ex, href: 'explainers/agents.html',
+    tip: 'The Explainability Agent proposes why the pair might work; the Clinical Feasibility Agent questions whether it is plausible in practice. They revise together.',
+    x: 'The Explainability Agent proposes why the pair might work. The Clinical Feasibility Agent asks whether that is plausible in practice. They exchange findings, question each other and revise their assessments.' },
+  { t: 'Biological evidence', c: COL.ev, href: 'explainers/evidence.html',
+    tip: 'Drug targets, gene networks, pathways and verified papers. Known links (solid) are kept apart from the agents’ hypotheses (dashed).',
+    x: 'The agents ground their arguments in drug targets, gene networks, pathways and verified papers, and keep known facts apart from their own hypotheses.' },
+  { t: 'Quantitative ranking and qualitative report', c: COL.rk, href: 'explainers/ranking.html',
+    tip: 'Candidates ranked by predicted synergy, model confidence and evidence; each shortlisted pair gets a qualitative report.',
+    x: 'Pairs are ranked by predicted synergy and the model’s confidence; the agents’ evidence decides which stay on the shortlist. Each shortlisted pair comes with a qualitative report.' },
+  { t: 'Human in the loop', c: COL.hu, href: 'explainers/human.html',
+    tip: 'A clinician or researcher makes the final call on what to investigate next. Decision support, not a treatment recommendation.',
+    x: 'A clinician or researcher reviews the predictions, uncertainty, evidence and agent reports, and decides which pairs deserve further investigation. Decision support, not a treatment recommendation.' }
+];
+const ALL = { t: 'The whole framework at once', c: '#9fd0ff', href: '#how',
+  x: 'Information flows from the outer ring to the centre: drug and cell data → neural network → prediction with uncertainty → agents ⇄ evidence → ranking and a qualitative report → a human decision.' };
+const L = i => byId('gL' + i);
+
+/* ---- flow lanes: Drug 1, Drug 2 and cell-line information travelling inwards ---- */
+[300, 60, 180].forEach(a => {
+  const [x0, y0] = P(352, a), [x1, y1] = P(96, a);
+  mk('line', { x1: q(x0), y1: q(y0), x2: q(x1), y2: q(y1), stroke: 'rgba(159,208,255,.32)', 'stroke-width': 2, 'stroke-linecap': 'round', class: 'lane' }, byId('gLanes'));
+});
+
+/* ---- layer 1: multimodal inputs, three separate groups (built from the detected modalities) ---- */
+const g1 = L(1), nodes = [];
+let gNodeHits = null;
+function buildInputs() {
+  g1.replaceChildren(); nodes.length = 0;
+  if (gNodeHits) gNodeHits.remove();
+  gNodeHits = mk('g', {}, byId('gHits'));
+GROUPS.forEach(g => {
+  const col = COL[g.key], first = Math.min(...g.angles), last = Math.max(...g.angles);
+  mk('path', { d: arcD(366, first - 13, last + 13), fill: 'none', stroke: col, 'stroke-opacity': .13, 'stroke-width': 54, 'stroke-linecap': 'round' }, g1);
+  arcText(g1, 409, g.centre, 50, g.label, 'glabel', col);
+  g.mods.forEach((m, i) => {
+    const a = g.angles[i], miss = g.missing.includes(m.name), [x, y] = P(366, a), c = miss ? COL.miss : col;
+    if (!miss) mk('circle', { cx: q(x), cy: q(y), r: 21, fill: 'none', stroke: col, 'stroke-width': 2, class: 'pulse', style: `animation-delay:${(i * .35).toFixed(2)}s` }, g1);
+    mk('circle', { cx: q(x), cy: q(y), r: 21, fill: miss ? '#1c2234' : '#081a4a', stroke: c, 'stroke-width': 2, 'stroke-dasharray': miss ? '4 3' : null }, g1);
+    mk('use', { href: '#' + (ICONS[m.name] || 'i-sigma'), x: q(x - 11), y: q(y - 11), width: 22, height: 22, color: c, opacity: miss ? .75 : 1 }, g1);
+    arcText(g1, 331, a, 11, SHORT[m.name] || m.label, 'nlab' + (miss ? ' miss' : ''));
+    nodes.push({ x, y, a, miss, g, m });
+  });
+});
+{ const [x, y] = P(366, 0);           // Drug 1 + Drug 2
+  mk('circle', { cx: q(x), cy: q(y), r: 13, fill: '#06143a', stroke: '#9fd0ff', 'stroke-opacity': .55 }, g1);
+  mk('text', { x: q(x), y: q(y + 6), 'text-anchor': 'middle', fill: '#cfe4ff', 'font-size': 18, 'font-weight': 800 }, g1).textContent = '+'; }
+  nodes.forEach(n => wire(mk('circle', { cx: q(n.x), cy: q(n.y), r: 25, class: 'hit' }, gNodeHits), {
+    key: 'mod', mod: n.m, group: n.g.name, miss: n.miss,
+    t: `${n.g.name} · ${n.m.label}`, c: n.miss ? COL.miss : COL[n.g.key],
+    tip: `${n.m.entries.toLocaleString()} ${n.m.entity === 'drug' ? 'drugs' : 'cell lines'} × ${n.m.features.toLocaleString()} features · ${n.m.file}` +
+         (n.miss ? '. No data in this file for the selected ' + (n.m.entity === 'drug' ? 'drug' : 'cell line') + ': the model switches this input off. Grey means no data, not zero activity.' : '') }, 1));
+  setStreams(stage);
+}
+
+/* ---- layer 2: circular multimodal neural network ---- */
+const g2 = L(2), NN = 48, outer = [], inner = [], links = [];
+for (let i = 0; i < NN; i++) { outer.push(P(300, i * 360 / NN)); inner.push(P(262, (i + .5) * 360 / NN)); }
+const gLinks = mk('g', { stroke: 'rgba(159,208,255,.22)', 'stroke-width': 1 }, g2);
+const link = (p, r) => { links.push([p, r]); mk('line', { x1: q(p[0]), y1: q(p[1]), x2: q(r[0]), y2: q(r[1]) }, gLinks); };
+for (let i = 0; i < NN; i++) {
+  const j = (i + 1) % NN, k = (i + NN - 1) % NN;
+  link(outer[i], inner[i]); link(outer[i], inner[k]); link(outer[i], outer[j]); link(inner[i], inner[j]);
+  if (i % 3 === 0) link(outer[i], inner[(i + 2) % NN]);
+}
+const gN = mk('g', { fill: COL.net }, g2);
+outer.forEach(p => mk('circle', { cx: q(p[0]), cy: q(p[1]), r: 3 }, gN));
+inner.forEach(p => mk('circle', { cx: q(p[0]), cy: q(p[1]), r: 2.4, 'fill-opacity': .8 }, gN));
+[[0, 'Learning how the drugs interact'], [60, 'Missing data switched off, not guessed'],
+ [180, 'Considering the cancer-cell context'], [300, 'Integrating drug information']]
+  .forEach(([a, t]) => arcText(g2, 281, a, 32, t, 'netlab'));
+
+/* ---- layer 3: quantitative prediction with uncertainty ---- */
+const g3 = L(3);
+mk('circle', { cx: C, cy: C, r: 227, fill: 'none', stroke: COL.pred, 'stroke-opacity': .15, 'stroke-width': 24 }, g3);
+[215, 239].forEach(r => mk('circle', { cx: C, cy: C, r, fill: 'none', stroke: COL.pred, 'stroke-opacity': .45 }, g3));
+const gTicks = mk('g', { stroke: COL.pred, 'stroke-opacity': .5 }, g3);
+for (let a = 0; a < 360; a += 7.5) { const [x0, y0] = P(239, a), [x1, y1] = P(a % 30 ? 243 : 247, a); mk('line', { x1: q(x0), y1: q(y0), x2: q(x1), y2: q(y1) }, gTicks); }
+const bands = [118, 242].map(a => {
+  const path = mk('path', { fill: 'none', stroke: COL.pred, 'stroke-opacity': .55, 'stroke-width': 24 }, g3);
+  const [x, y] = P(227, a);
+  mk('circle', { cx: q(x), cy: q(y), r: 5, fill: '#fff3bf', filter: 'url(#glow)' }, g3);
+  return { a, path };
+});
+arcText(g3, 227, 0, 52, 'QUANTITATIVE PREDICTION ± UNCERTAINTY', 'plab');
+arcText(g3, 227, 180, 46, 'click for the model details', 'plab2');
+
+/* ---- layer 4: two collaborating agents ---- */
+const g4 = L(4);
+mk('path', { d: arcD(184, 180, 360), fill: 'none', stroke: COL.ex, 'stroke-opacity': .08, 'stroke-width': 46 }, g4);
+mk('path', { d: arcD(184, 0, 180), fill: 'none', stroke: COL.fe, 'stroke-opacity': .08, 'stroke-width': 46 }, g4);
+mk('circle', { cx: C, cy: C, r: 184, fill: 'none', stroke: 'rgba(255,255,255,.22)', 'stroke-width': 1.4, 'stroke-dasharray': '3 6' }, g4);
+arcText(g4, 184, 0, 40, 'exchange · question · revise', 'atop');
+arcText(g4, 184, 226, 25, 'Explainability Agent', 'alab', COL.ex);
+arcText(g4, 184, 133, 28, 'Clinical Feasibility Agent', 'alab', COL.fe);
+const bots = [{ key: 'ex', a: 270, col: COL.ex }, { key: 'fe', a: 90, col: COL.fe }].map(b => {
+  const [x, y] = P(184, b.a), side = b.a === 270 ? 1 : -1;
+  const g = mk('g', { transform: `translate(${q(x)} ${q(y)})` }, g4);
+  mk('circle', { r: 26, fill: '#0b1f55', stroke: b.col, 'stroke-width': 2.5, filter: 'url(#glow)' }, g);
+  mk('use', { href: '#bot', x: -18, y: -19, width: 36, height: 36, color: b.col }, g);
+  const bub = mk('g', { class: 'bubble', transform: `translate(${14 * side} -36)` }, g);
+  mk('rect', { x: -12, y: -10, width: 24, height: 19, rx: 7, fill: b.col }, bub);
+  mk('path', { d: `M${-3 * side} 8l${-6 * side} 7l${10 * side} -7z`, fill: b.col }, bub);
+  const bt = mk('text', { y: 4.5, 'text-anchor': 'middle', class: 'bubt' }, bub);
+  return Object.assign(b, { x, y, bub, bt });
+});
+
+/* ---- layer 5: biological evidence (targets, genes, pathways) ---- */
+const g5 = L(5);
+mk('circle', { cx: C, cy: C, r: 135, fill: 'none', stroke: COL.ev, 'stroke-opacity': .09, 'stroke-width': 44 }, g5);
+const EV = [{ a: 300, t: 'd1' }, { a: 332, t: 'd1' }, { a: 28, t: 'd2' }, { a: 60, t: 'd2' }, { a: 0, t: 'gene' }, { a: 262, t: 'gene' },
+            { a: 98, t: 'gene' }, { a: 222, t: 'path' }, { a: 138, t: 'path' }, { a: 180, t: 'path' }].map(e => ({ ...e, p: P(132, e.a) }));
+const evLink = (i, j, hyp) => {
+  const A = EV[i], B = EV[j], [cx, cy] = P(152, midAngle(A.a, B.a));
+  mk('path', { d: `M${q(A.p[0])} ${q(A.p[1])}Q${q(cx)} ${q(cy)} ${q(B.p[0])} ${q(B.p[1])}`, fill: 'none',
+    stroke: hyp ? '#ffd8a8' : '#e6dcff', 'stroke-opacity': hyp ? .9 : .7, 'stroke-width': 1.7, class: hyp ? 'hyp' : null }, g5);
+};
+[[0, 5], [1, 4], [2, 4], [3, 6], [5, 7], [6, 8]].forEach(([i, j]) => evLink(i, j, false));
+[[7, 9], [8, 9]].forEach(([i, j]) => evLink(i, j, true));
+EV.forEach(e => {
+  const [x, y] = e.p;
+  if (e.t === 'path') { mk('circle', { cx: q(x), cy: q(y), r: 7.5, fill: '#2a1d5c', stroke: COL.ev, 'stroke-width': 2 }, g5); mk('circle', { cx: q(x), cy: q(y), r: 2.6, fill: COL.ev }, g5); }
+  else mk('circle', { cx: q(x), cy: q(y), r: e.t === 'gene' ? 5 : 6.5, fill: e.t === 'gene' ? '#e6dcff' : COL[e.t], filter: 'url(#glow)' }, g5);
+});
+arcText(g5, 156, 180, 30, 'BIOLOGICAL EVIDENCE', 'elab');
+
+/* ---- layer 6: quantitative ranking and reports ---- */
+const g6 = L(6);
+mk('circle', { cx: C, cy: C, r: 104, fill: 'none', stroke: COL.rk, 'stroke-opacity': .16, 'stroke-width': 17 }, g6);
+{ const rot = mk('g', { class: 'spin-rev' }, g6), id = 'fp' + uid++;
+  mk('path', { id, d: `M${C} ${C - 104}A104 104 0 1 1 ${C} ${C + 104}A104 104 0 1 1 ${C} ${C - 104}`, fill: 'none' }, defs);
+  const t = mk('text', { class: 'rlab', dy: '0.35em' }, rot);
+  mk('textPath', { href: '#' + id, textLength: 645, lengthAdjust: 'spacing' }, t).textContent =
+    'QUANTITATIVE RANKING • QUALITATIVE REPORT • QUANTITATIVE RANKING • QUALITATIVE REPORT • '; }
+
+/* ---- hover tips and links ---- */
+const tip = byId('stageTip'), box = byId('stage2'), gH = byId('gHits');
+function showTip(info, x, y) {
+  const b = document.createElement('b'), s = document.createElement('span'), em = document.createElement('em');
+  b.textContent = info.t; s.textContent = info.tip; em.textContent = 'Click for what it does, its input and output';
+  tip.replaceChildren(b, s, em); tip.style.setProperty('--tc', info.c); tip.hidden = false;
+  const r = box.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = x - r.left + 16, top = y - r.top + 16;
+  if (left + w > r.width) left = x - r.left - w - 16;
+  if (top + h > r.height) top = y - r.top - h - 16;
+  tip.style.left = Math.max(0, left) + 'px'; tip.style.top = Math.max(0, top) + 'px';
+}
+function wire(el, info, layer) {
+  const g = L(layer), open = () => { if (window.onRingExplore) window.onRingExplore(info, layer); };
+  el.setAttribute('tabindex', '0'); el.setAttribute('role', 'link'); el.setAttribute('aria-label', info.t + '. ' + info.tip);
+  el.addEventListener('pointermove', e => showTip(info, e.clientX, e.clientY));
+  el.addEventListener('pointerenter', () => g.classList.add('hov'));
+  el.addEventListener('pointerleave', () => { tip.hidden = true; g.classList.remove('hov'); });
+  el.addEventListener('focus', () => { const r = el.getBoundingClientRect(); showTip(info, r.left + r.width / 2, r.top + r.height / 2); g.classList.add('hov'); });
+  el.addEventListener('blur', () => { tip.hidden = true; g.classList.remove('hov'); });
+  el.addEventListener('click', open);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+}
+const BANDS = [null, [312, 428], [252, 312], [212, 252], [158, 212], [112, 158], [94, 112], [0, 94]];
+for (let i = 1; i <= 7; i++) wire(mk('path', { d: annulus(...BANDS[i]), 'fill-rule': 'evenodd', class: 'hit' }, gH), Object.assign({ key: 's' + i }, STAGES[i]), i);
+const BOT_INFO = {
+  ex: { t: 'Explainability Agent', c: COL.ex, href: 'explainers/agents.html#explain',
+        tip: 'Asks why the pair might work: which targets and pathways could explain the prediction, and whether the evidence agrees.' },
+  fe: { t: 'Clinical Feasibility Agent', c: COL.fe, href: 'explainers/agents.html#feasibility',
+        tip: 'Asks whether the pair is plausible in practice: approval status, dosing context, overlapping toxicities and registered trials.' } };
+bots.forEach(b => wire(mk('circle', { cx: q(b.x), cy: q(b.y), r: 29, class: 'hit' }, gH), Object.assign({ key: b.key }, BOT_INFO[b.key]), 4));
+
+/* ---- moving information: particles, network pulses, agent messages ---- */
+const gP = byId('gParticles');
+function spark(parent, col) {
+  const g = mk('g', { fill: col }, parent);
+  mk('circle', { r: 7, 'fill-opacity': .22 }, g); mk('circle', { r: 2.8 }, g);
+  return g;
+}
+const place = (g, x, y, o) => { g.setAttribute('transform', `translate(${q(x)} ${q(y)})`); g.setAttribute('opacity', o.toFixed(2)); };
+const colourAt = (r, s) => r > 312 ? s.col : r > 252 ? '#e6f0ff' : r > 206 ? COL.pred
+  : r > 160 ? (s.a > 180 ? COL.ex : s.a > 0 && s.a < 180 ? COL.fe : '#e6f0ff') : r > 112 ? '#d0bfff' : '#d8f5a2';
+const live = () => nodes.filter(n => !n.miss);      // grey inputs send nothing
+function streamsFor(s) {
+  const S = [], add = (angles, r0, r1, dur, n) => angles.forEach(a => { for (let k = 0; k < n; k++) S.push({ a, r0, r1, dur, ph: k / n + a / 720 }); });
+  if (s === 2 || s === 0) live().forEach(n => { for (let k = 0; k < 2; k++) S.push({ a: n.a, r0: 344, r1: 290, dur: 1800, ph: k / 2 + n.a / 360, col: COL[n.g.key] }); });
+  if (s === 3) add([0, 60, 120, 180, 240, 300], 290, 229, 1700, 2);
+  if (s === 4) add([0, 60, 180, 300], 227, 186, 1500, 2);
+  if (s === 5) { add([300, 60, 180], 184, 134, 1600, 2); add([0, 120, 240], 134, 184, 1600, 2); }
+  if (s === 6) add([0, 60, 120, 180, 240, 300], 134, 106, 1400, 2);
+  if (s === 7) add([0, 45, 90, 135, 180, 225, 270, 315], 128, 93, 1500, 1);
+  if (s === 0) add([0, 60, 120, 180, 240, 300], 290, 93, 5200, 2);
+  return S;
+}
+const pool = [];
+let streams = [];
+function setStreams(s) {
+  streams = reduce ? [] : streamsFor(s);
+  while (pool.length < streams.length) pool.push(spark(gP, '#fff'));
+  pool.forEach((p, i) => { p.style.display = i < streams.length ? '' : 'none'; });
+}
+const pulses = Array.from({ length: 9 }, () => ({ g: spark(g2, '#ffffff'), l: null, t0: 0 }));
+const msgs = [[197, 270, 450, COL.ex, 0], [197, 270, 450, COL.ex, .5], [171, 90, -90, COL.fe, .25], [171, 90, -90, COL.fe, .75]]
+  .map(([r, from, to, col, ph]) => ({ r, from, to, ph, g: spark(g4, col) }));
+function frame(t) {
+  bands.forEach((b, i) => { const s = 9 + 3.5 * Math.sin(t / 900 + i * 2.1); b.path.setAttribute('d', arcD(227, b.a - s, b.a + s)); });
+  pulses.forEach(p => {
+    if (!p.l || t - p.t0 > 650) { p.l = links[Math.random() * links.length | 0]; p.t0 = t; }
+    const u = (t - p.t0) / 650, [a, b] = p.l;
+    place(p.g, a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, Math.sin(Math.PI * u));
+  });
+  msgs.forEach(m => { const u = (t / 2600 + m.ph) % 1, [x, y] = P(m.r, m.from + (m.to - m.from) * u); place(m.g, x, y, Math.sin(Math.PI * u)); });
+  streams.forEach((s, i) => {
+    const u = (t / s.dur + s.ph) % 1, r = s.r0 + (s.r1 - s.r0) * u, [x, y] = P(r, s.a);
+    pool[i].setAttribute('fill', colourAt(r, s)); place(pool[i], x, y, Math.sin(Math.PI * u));
+  });
+  requestAnimationFrame(frame);
+}
+if (reduce) { pulses.concat(msgs).forEach(p => p.g.setAttribute('opacity', 0)); bands.forEach(b => b.path.setAttribute('d', arcD(227, b.a - 10, b.a + 10))); }
+else {
+  requestAnimationFrame(frame);
+  const SEQ = [[0, '!'], [1, '?'], [0, '↻'], [1, '✓']];
+  let bi = 0;
+  setInterval(() => {
+    const [w, ch] = SEQ[bi++ % SEQ.length];
+    bots.forEach(b => b.bub.classList.remove('on'));
+    bots[w].bt.textContent = ch; bots[w].bub.classList.add('on');
+  }, 1500);
+}
+
+/* ---- the 7 stages: autoplay, caption, controls and story cards ---- */
+const cards = [];
+const cap = byId('stageCap'), capStep = byId('capStep'), capTitle = byId('capTitle'), capText = byId('capText'),
+      capLink = byId('capLink'), playBtn = byId('capPlay'), dots = [];
+for (let i = 1; i <= 7; i++) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.setAttribute('aria-label', `Stage ${i}: ${STAGES[i].t}`); b.style.setProperty('--dc', STAGES[i].c);
+  b.addEventListener('click', () => go(i, true));
+  byId('capDots').appendChild(b); dots.push(b);
+}
+let stage = 0, playing = !reduce, timer = 0;
+function go(s, byUser) {
+  stage = s;
+  for (let i = 1; i <= 7; i++) {
+    const g = L(i);
+    g.classList.toggle('now', s === 0 || i === s); g.classList.toggle('past', s > 0 && i < s); g.classList.toggle('next', s > 0 && i > s);
+  }
+  const info = s ? STAGES[s] : ALL;
+  capStep.textContent = s ? `Stage ${s} of 7` : 'All stages';
+  capTitle.textContent = info.t; capText.textContent = info.x;
+  capLink.href = info.href; capLink.textContent = s ? 'Open the explainer →' : 'Go through the stages →';
+  capLink.style.color = info.c; cap.style.setProperty('--cc', info.c);
+  dots.forEach((d, i) => d.classList.toggle('on', s === 0 || i < s));
+  cards.forEach(c => c.classList.toggle('active', +c.dataset.stage === s));
+  setStreams(s);
+  if (byUser) playing = false;
+  syncPlay();
+}
+function syncPlay() {
+  playBtn.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;';
+  playBtn.setAttribute('aria-label', playing ? 'Pause the animation' : 'Play the animation');
+  clearTimeout(timer);
+  if (playing) timer = setTimeout(() => go(stage === 7 ? 0 : stage + 1), stage === 0 ? 9000 : 5600);
+}
+playBtn.addEventListener('click', () => { playing = !playing; syncPlay(); });
+byId('capPrev').addEventListener('click', () => go(stage <= 1 ? 7 : stage - 1, true));
+byId('capNext').addEventListener('click', () => go(stage >= 7 ? 1 : stage + 1, true));
+byId('capAll').addEventListener('click', () => go(0, true));
+cards.forEach(c => {
+  c.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    go(+c.dataset.stage, true);
+    byId('stage').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  });
+  c.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target === c) { e.preventDefault(); c.click(); } });
+});
+go(0);
+// Used by the dashboard: modalities from the files, their availability for the chosen pair, and the
+// ring stage to light up while the pipeline runs (this also stops the autoplay).
+window.SynergyRing = {
+  setModalities(mods, avail) {
+    const drug = mods.filter(m => m.entity === 'drug'), cell = mods.filter(m => m.entity === 'cell_line');
+    const missing = side => avail ? mods.filter(m => avail[m.name] && avail[m.name][side] === false).map(m => m.name) : [];
+    GROUPS = [
+      { key: 'd1', name: 'Drug 1', label: 'DRUG 1 · MULTIMODAL INFORMATION', centre: 300, angles: spread(255, 345, drug.length), mods: drug, missing: missing('drug1') },
+      { key: 'd2', name: 'Drug 2', label: 'DRUG 2 · MULTIMODAL INFORMATION', centre: 60, angles: spread(15, 105, drug.length), mods: drug, missing: missing('drug2') },
+      { key: 'cell', name: 'Cancer cell line', label: 'CANCER CELL LINE · BIOLOGICAL CONTEXT', centre: 180, angles: spread(145, 215, cell.length), mods: cell, missing: missing('cell') }
+    ];
+    buildInputs();
+  },
+  go(s) { playing = false; go(s); },
+  showAll() { playing = false; go(0); },
+  play() { playing = !reduce; go(0); }
+};
+document.dispatchEvent(new Event('synergyring:ready'));
+})();
+
+</script>
+<script>
+'use strict';
+/* SynergyTumor Board dashboard. Data: the back end (app/pairs_app.py --serve) runs one Zetaris query per
+   pipeline stage (/stage/...) and reads the model's modalities from the project files (/modalities). */
+const API = location.protocol === 'file:' ? 'http://127.0.0.1:8765' : '';
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const fmt = x => Number(x).toLocaleString();
+const num = (x, d = 2) => (x === null || x === undefined || x === '' || !isFinite(+x)) ? '–' : Number(x).toFixed(d);
+const METRICS = ['Loewe', 'Bliss', 'HSA', 'Zip'];
+const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
+const cidKey = (a, b) => [Number(a), Number(b)].sort((x, y) => x - y).join('_');
+const jsonList = v => { try { const x = JSON.parse(v || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
+async function getJSON(path) {
+  let r;
+  try { r = await fetch(API + path, { cache: 'no-store' }); }
+  catch { throw new Error("Can't reach the data server. Start it with: python app/pairs_app.py --serve"); }
+  const body = await r.json();
+  if (!r.ok) throw new Error(body.error || 'Request failed (' + r.status + ')');
+  return body;
+}
+
+/* ---------- state ---------- */
+let cells = [], modalities = [], run = null, running = false;
+
+/* ---------- pipeline stage tracker (under the workflow) ---------- */
+const STEPS = ['Input selection', 'Data retrieval', 'Model prediction', 'Prediction filter', 'Uncertainty filter', 'Multi-agent evidence review', 'Clinician-ready overview'];
+const RING_FOR_STEP = [1, 1, 3, 3, 3, 4, 6];        // which ring of the workflow each step lights up
+STEPS.forEach(s => $('tracker').append(el('li', null, s)));
+function track(i, done) {
+  [...$('tracker').children].forEach((li, k) => { li.className = k < i || (done && k === i) ? 'done' : k === i ? 'active' : ''; });
+  if (window.SynergyRing && i >= 0 && i < STEPS.length) window.SynergyRing.go(RING_FOR_STEP[i]);
+}
+function setMode(m) {
+  const chip = $('modeChip');
+  chip.className = 'chip ' + m;
+  chip.lastChild.textContent = { explore: 'Exploration mode', running: 'Running', done: 'Pipeline complete' }[m];
+}
+
+/* ---------- exploration: what each part of the workflow does ---------- */
+function modList(entity) {
+  const ms = modalities.filter(m => m.entity === entity);
+  return ms.length ? ms.map(m => m.label + ' (' + fmt(m.features) + ' features)').join(', ') : 'read from the modality files';
+}
+function explain(info) {
+  const k = info.key;
+  if (k === 'mod') {
+    const m = info.mod;
+    return { t: info.t, c: info.c, rows: [
+      ['What it is', m.label + ': one of the model’s ' + (m.entity === 'drug' ? 'drug' : 'cell-line') + ' modalities, read from the project files.'],
+      ['File', m.file],
+      ['Coverage', fmt(m.entries) + (m.entity === 'drug' ? ' drugs' : ' cell lines') + ' × ' + fmt(m.features) + ' features; ' + fmt(m.matched) + ' match ids in Zetaris.'],
+      ['Input / output', 'Input to the multimodal network for ' + (m.entity === 'drug' ? 'each of Drug 1 and Drug 2 separately' : 'the cancer cell line') + '. Where a ' + (m.entity === 'drug' ? 'drug' : 'cell line') + ' has no row in this file, the input is switched off, not filled with zeros.'],
+      ...(info.miss ? [['Selected pair', 'No data in this file for the selected ' + (m.entity === 'drug' ? 'drug' : 'cell line') + '.']] : [])] };
+  }
+  const E = {
+    s1: ['The model’s inputs, kept separate for Drug 1, Drug 2 and the cancer cell line.',
+         'Drug modalities: ' + modList('drug') + '. Cell-line modalities: ' + modList('cell_line') + '.',
+         'One feature set per drug and per cell line; missing modalities stay missing.',
+         'Everything the model knows about a drug pair in a cell line comes from these files.'],
+    s2: ['A multimodal neural network that summarises each modality, lets them inform each other and learns how two drugs interact in a cell line.',
+         'The drug and cell-line modalities above, for every Drug 1 + Drug 2 + cell line triplet.',
+         'Synergy scores with uncertainty for each triplet.',
+         'Pretrained before the hackathon and run offline on a GPU. Its output for every measured triplet (Output.csv) is the predictions table in Zetaris, which this app reads.'],
+    s3: ['Four synergy scores per pair (Loewe, Bliss, HSA, ZIP), each with total, aleatoric and epistemic uncertainty and a 95% interval.',
+         'The network’s output, read from Zetaris for the selected cell line (both drug orders averaged).',
+         'Funnel 1 keeps pairs with at least 3 of 4 scores predicted above 5 (and above 6 where a measured value exists). Funnel 2 keeps pairs with z_HSA = (predicted HSA − 5) / HSA total uncertainty ≥ 1.',
+         'Turns millions of possible pairs into a short, confident list.'],
+    s4: ['Two collaborating agents. In this build the literature review runs as a Proposer and a Critic on the Meterless Markovian engine, with every model call through Meterless Nightshift.',
+         'The pairs that pass the uncertainty filter, with the cell line’s name and tissue.',
+         'For each pair: an evidence class, the verified citations, and keep or reject with the reason.',
+         'Funnel 3: removes pairs without biological support in the literature.'],
+    s5: ['Biological evidence the agents must ground their claims in: PubMed papers, drug names from PubChem, and drug targets.',
+         'Retrieved by code, not by the model; drug targets come from Drug_metadata (curated_target_genes_RepurposingHub) in Zetaris.',
+         'Evidence summary, pathways, mechanism and the PubMed ids the code verified.',
+         'Keeps known facts apart from hypotheses; invented citations are rejected.'],
+    s6: ['Quantitative ranking and a qualitative report.',
+         'Predicted synergy, its uncertainty (z_HSA) and the agents’ evidence class.',
+         'The ranked shortlist, each pair with an overview, its drug targets and the evidence.',
+         'The clinician-ready overview at the bottom of this page.'],
+    s7: ['The human in the loop: a clinician or researcher decides which pairs deserve further investigation.',
+         'The shortlist, its uncertainty and its evidence.',
+         'A decision about what to test next.',
+         'Decision support, not a treatment recommendation.'],
+    ex: ['The Explainability Agent: why the pair might work.', 'The shortlisted pair, its targets and the retrieved papers.',
+         'A proposed mechanism and evidence class (in this build: the Proposer role).', 'Explains the prediction biologically.'],
+    fe: ['The Clinical Feasibility Agent: whether the claim holds up.', 'The Explainability Agent’s proposal and the retrieved papers.',
+         'Objections and their severity (in this build: the Critic role, which also checks citations).', 'Stops unsupported or overstated claims.']
+  }[k];
+  if (!E) return null;
+  return { t: info.t, c: info.c, rows: [['What it does', E[0]], ['Input', E[1]], ['Output', E[2]], ['In the pipeline', E[3]]] };
+}
+window.onRingExplore = info => {
+  const e = explain(info); if (!e) return;
+  $('exTitle').textContent = e.t; $('explore').style.setProperty('--ec', e.c);
+  const dl = $('exBody'); dl.replaceChildren();
+  e.rows.forEach(([a, b]) => dl.append(el('dt', null, a), el('dd', null, b)));
+  $('explore').hidden = false;
+};
+$('exClose').addEventListener('click', () => { $('explore').hidden = true; });
+
+/* ---------- modalities (from the files) ---------- */
+function renderModalities(avail) {
+  const box = $('modBody'); box.replaceChildren(); box.className = '';
+  const row = (title, ms, side) => {
+    const r = el('div', 'modrow'); r.append(el('div', 'who', title));
+    ms.forEach(m => {
+      const off = avail && m[side + '_available'] === false;
+      const c = el('span', 'mchip ' + (off ? 'off' : m.entity + (avail ? ' has' : '')), m.label + ' ');
+      c.append(el('small', null, fmt(m.features)));
+      c.title = m.file + ' · ' + fmt(m.entries) + (m.entity === 'drug' ? ' drugs' : ' cell lines') + (off ? ' · no data for the selected pair' : '');
+      r.append(c);
+    });
+    box.append(r);
+  };
+  const drug = modalities.filter(m => m.entity === 'drug'), cell = modalities.filter(m => m.entity === 'cell_line');
+  if (avail) { row('Drug 1 · ' + avail.d1, drug, 'drug1'); row('Drug 2 · ' + avail.d2, drug, 'drug2'); row('Cell line · ' + avail.cell, cell, 'cell'); }
+  else { row('Drug modalities (' + drug.length + ')', drug); row('Cell-line modalities (' + cell.length + ')', cell); }
+  const sup = modalities.filter(m => m.entity === 'supporting');
+  box.append(el('p', 'mnote', 'Read from the project’s modality files; drug or cell line is decided by matching each file’s ids against Zetaris, not by folder.' +
+    (sup.length ? ' Supporting file: ' + sup.map(m => m.label + ' (' + fmt(m.entries) + ' × ' + fmt(m.features) + ')').join(', ') + '.' : '') +
+    (avail ? ' ✓ data in the files for this drug or cell line; grey dashed: no data, so the model switches that input off.' : ' Numbers: features per modality.')));
+}
+function ringModalities(avail) {
+  if (!window.SynergyRing) return;
+  const map = avail ? Object.fromEntries(modalities.map(m => [m.name, { drug1: m.drug1_available, drug2: m.drug2_available, cell: m.cell_available }])) : null;
+  window.SynergyRing.setModalities(modalities, map);
+}
+async function loadModalities() {
+  try {
+    const m = await getJSON('/modalities'); modalities = m.modalities;
+    if (!modalities.length) { $('modBody').textContent = m.note || 'Modality files not present.'; return; }
+    renderModalities(); ringModalities();
+  } catch (e) { $('modBody').textContent = e.message; }
+}
+
+/* ---------- tissue and cell line (Zetaris cell_lines.tissue) ---------- */
+async function loadCells() {
+  try {
+    cells = (await getJSON('/cell_lines')).cell_lines;
+    const tissues = [...new Set(cells.map(c => c.tissue || ''))].sort();
+    const sel = $('tissue'); sel.replaceChildren(new Option('Select tissue…', ''));
+    tissues.forEach(t => { const n = cells.filter(c => (c.tissue || '') === t).length; sel.append(new Option(cap(t) + ' (' + n + ')', t)); });
+    sel.disabled = false;
+    $('status').textContent = 'Zetaris · ' + cells.length + ' cell lines with predictions in ' + tissues.length + ' tissues.';
+  } catch (e) { $('status').textContent = e.message; }
+}
+$('tissue').addEventListener('change', () => {
+  const t = $('tissue').value, sel = $('cell');
+  sel.replaceChildren(new Option(t ? 'Select cell line…' : 'Choose a tissue first', ''));
+  cells.filter(c => (c.tissue || '') === t).map(c => c.name).sort((a, b) => a.localeCompare(b)).forEach(n => sel.append(new Option(n, n)));
+  sel.disabled = !t; $('runBtn').disabled = true; $('cellInfo').textContent = '';
+});
+$('cell').addEventListener('change', () => { $('runBtn').disabled = !$('cell').value || running; $('cellInfo').textContent = $('cell').value; });
+
+/* ---------- message log ---------- */
+function msg(kind, title, lines, extra) {
+  const m = el('div', 'msg ' + kind); m.append(el('b', null, title));
+  (lines || []).forEach(l => m.append(el('div', 'meta', l)));
+  if (extra) m.append(extra);
+  $('log').append(m); m.scrollIntoView({ block: 'nearest' });
+  return m;
+}
+function sqlBlock(r) {
+  const d = el('details'); d.append(el('summary', null, 'Query sent to Zetaris'), el('pre', null, r.sql));
+  (r.plan || []).forEach(p => { const a = el('a', null, 'Open query plan ' + p.id + ' in the Zetaris engine'); a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+    const w = el('div'); w.style.marginTop = '4px'; w.append(a); d.append(w); });
+  return d;
+}
+
+/* ---------- funnels and their tables ---------- */
+function setFunnel(i, state, n, title) {
+  const f = $('f' + i); f.className = 'funnel ' + state; f.disabled = state === 'pending' || state === 'active';
+  if (n != null) $('n' + i).textContent = n;
+  if (title) f.title = title;
+}
+const TABLE_PAGE = 30;
+let tableRows = [], tableShown = 0, tableCols = [];
+function openTable(title, note, cols, rows) {
+  $('tTitle').textContent = title; $('tNote').textContent = note;
+  tableCols = cols; tableRows = rows; tableShown = 0;
+  const t = $('tTable'); t.replaceChildren();
+  const tr = el('tr'); cols.forEach(c => tr.append(el('th', null, c[0]))); const th = el('thead'); th.append(tr); t.append(th, el('tbody'));
+  moreRows(); $('tableArea').hidden = false; $('tableArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function moreRows() {
+  const tb = $('tTable').querySelector('tbody');
+  tableRows.slice(tableShown, tableShown + TABLE_PAGE).forEach(r => {
+    const tr = el('tr', r._cls || null);
+    tableCols.forEach(([, f, isNum]) => { const v = f(r); const td = el('td', isNum ? 'num' : null); if (v instanceof Node) td.append(v); else td.textContent = v; tr.append(td); });
+    tb.append(tr);
+  });
+  tableShown = Math.min(tableRows.length, tableShown + TABLE_PAGE);
+  $('tMore').hidden = tableShown >= tableRows.length;
+  $('tMore').textContent = 'Show ' + Math.min(TABLE_PAGE, tableRows.length - tableShown) + ' more (' + fmt(tableShown) + ' of ' + fmt(tableRows.length) + ' shown)';
+}
+$('tMore').addEventListener('click', moreRows);
+const pairName = p => p.drug_1_name + ' + ' + p.drug_2_name;
+const stBadge = (cls, text) => el('span', 'st ' + cls, text);
+const scoreCols = METRICS.map(m => [m === 'Zip' ? 'ZIP' : m, p => num(p['Prediction_label_' + m]), true]);
+function table1() {
+  const d = run.synergy;
+  openTable('Funnel 1 · Model-predicted synergistic drug pairs',
+    fmt(d.pairs.length) + ' pairs in ' + d.cell_line + ' with at least 3 of 4 synergy scores predicted above 5 (and above 6 where measured).',
+    [['Drug pair', pairName], ['Tissue', () => cap(run.tissue)], ['Cell line', () => d.cell_line], ...scoreCols,
+     ['HSA uncertainty', p => num(p.HSA_total_std), true], ['Pass', p => stBadge('keep', p.n_synergy_metrics + ' of 4')]],
+    d.pairs);
+}
+function table2() {
+  const d = run.synergy, kept = new Set(run.uncertainty.pairs.map(p => cidKey(p.drug_1, p.drug_2)));
+  const rows = d.pairs.map(p => Object.assign({}, p, { _keep: kept.has(cidKey(p.drug_1, p.drug_2)), _cls: kept.has(cidKey(p.drug_1, p.drug_2)) ? null : 'filtered' }));
+  openTable('Funnel 2 · Uncertainty filter',
+    fmt(kept.size) + ' of ' + fmt(rows.length) + ' pairs retained: z_HSA = (predicted HSA − 5) / HSA total uncertainty must be at least 1.',
+    [['Drug pair', pairName], ['HSA predicted', p => num(p.Prediction_label_HSA), true], ['Total unc.', p => num(p.HSA_total_std), true],
+     ['Aleatoric', p => num(p.HSA_aleatoric_std), true], ['Epistemic', p => num(p.HSA_epistemic_std), true], ['z_HSA', p => num(p.z_HSA, 3), true],
+     ['Status', p => p._keep ? stBadge('keep', 'Retained') : stBadge('reject', 'Filtered')],
+     ['Reason', p => p._keep ? 'z_HSA ≥ 1' : 'z_HSA ' + num(p.z_HSA) + ' < 1: prediction too uncertain']],
+    rows);
+}
+function decisionOf(a) {
+  if (!a) return ['wait', 'Not reviewed'];
+  if (a.decision === 'reject') return ['reject', 'Reject'];
+  if (a.decision === 'error') return ['review', 'Error'];
+  return /unresolved|revise/i.test(a.final_status || '') ? ['review', 'Retain · needs review'] : ['keep', 'Retain'];
+}
+function table3() {
+  const ag = run.agent, byKey = Object.fromEntries(ag.kept.map(k => [cidKey(k.drug1_pubchem_cid, k.drug2_pubchem_cid), k]));
+  let rows;
+  if (ag.screened.length) {
+    rows = ag.screened.map(s => { const p = run.uncertainty.pairs[Number(String(s.pair_id).replace('row ', '')) - 1] || {};
+      const k = byKey[cidKey(p.drug_1, p.drug_2)]; return { p, k, s }; });
+  } else rows = ag.kept.map(k => ({ p: run.uncertainty.pairs.find(p => cidKey(p.drug_1, p.drug_2) === cidKey(k.drug1_pubchem_cid, k.drug2_pubchem_cid)) || {}, k, s: null }));
+  const clip = (t, n) => !t || t === 'unknown' ? '–' : (t.length > n ? t.slice(0, n) + '…' : t);
+  openTable('Funnel 3 · Multi-agent evidence review',
+    (ag.screened.length ? fmt(ag.screened.length) + ' pairs examined, ' : '') + fmt(ag.kept.length) + ' retained by the Meterless agent pipeline.',
+    [['Drug pair', r => r.p.drug_1_name ? pairName(r.p) : (r.k ? r.k.Drug1 + ' + ' + r.k.Drug2 : (r.s.Drug1 + ' + ' + r.s.Drug2))],
+     ['Evidence class', r => (r.k && r.k.evidence_class) || (r.s && r.s.evidence_class) || '–'],
+     ['Evidence summary', r => clip(r.k && r.k.evidence_summary, 160)],
+     ['Target / pathway findings', r => clip(r.k && (r.k.cancer_pathway_or_phenotype || r.k.tissue_pathway_or_phenotype), 140)],
+     ['Agent conclusion', r => r.k ? (r.k.final_status || '–') + (r.k.rounds_used ? ' · ' + r.k.rounds_used + ' round(s)' : '') : clip(r.s && r.s.reason, 120)],
+     ['Status', r => { const [c, t] = r.k ? decisionOf(r.k) : decisionOf(r.s); return stBadge(c, t); }]],
+    rows);
+}
+$('f1').addEventListener('click', () => run && run.synergy && table1());
+$('f2').addEventListener('click', () => run && run.uncertainty && table2());
+$('f3').addEventListener('click', () => run && run.agent && table3());
+
+/* ---------- final clinician-ready overview ---------- */
+const genesOf = d => [...new Set(String((d && d.curated_target_genes_repurposinghub) || '').split(/[,;|]/).map(g => g.trim()).filter(Boolean))];
+function section(title, ...kids) { const s = el('section'); s.append(el('h5', null, title), ...kids); return s; }
+function line(k, v) { const p = el('p'); p.append(el('span', 'k', k + ': '), document.createTextNode(v)); return p; }
+function geneList(name, genes, shared) {
+  const w = el('div'); w.append(el('p', null, name));
+  const g = el('div', 'genes'); (genes.length ? genes : ['not listed']).forEach(x => g.append(el('span', shared.includes(x) ? 'shared' : null, x))); w.append(g);
+  return w;
+}
+function renderResults() {
+  const ag = run.agent, U = run.uncertainty, drugs = U.drugs || {};
+  let list;
+  if (ag.kept.length) {
+    list = ag.kept.slice().sort((a, b) => Number(a.rank || 99) - Number(b.rank || 99)).map(k => ({
+      k, p: U.pairs.find(p => cidKey(p.drug_1, p.drug_2) === cidKey(k.drug1_pubchem_cid, k.drug2_pubchem_cid)) }));
+    $('rNote').textContent = fmt(list.length) + ' pairs retained after the multi-agent evidence review, for ' + run.cell + ' (' + cap(run.tissue) + ').';
+  } else {
+    list = U.pairs.slice(0, 5).map(p => ({ k: null, p }));
+    $('rNote').textContent = 'No agent review in Zetaris for ' + run.cell + ' yet: the top 5 confident predictions are shown, awaiting evidence review.';
+  }
+  const box = $('rList'); box.replaceChildren();
+  list.forEach(({ k, p }, i) => {
+    if (!p) return;
+    const [cls, status] = k ? decisionOf(k) : ['wait', 'Awaiting evidence review'];
+    const d = el('details', 'rcard'); if (i === 0) d.open = true;
+    const s = el('summary'); const t = el('div', 'pair', pairName(p));
+    t.append(el('span', 'sub', cap(run.tissue) + ' · ' + run.cell + ' · z_HSA ' + num(p.z_HSA, 3) + (k && k.evidence_class ? ' · ' + k.evidence_class.replace(/_/g, ' ') : '')));
+    s.append(el('span', 'rank', String(i + 1)), t, stBadge(cls, status)); d.append(s);
+    const body = el('div', 'rbody');
+    const n5 = METRICS.filter(m => Number(p['Prediction_label_' + m]) > 5).length;
+    body.append(section('Overview',
+      line('Drugs', pairName(p) + ' (PubChem ' + p.drug_1 + ', ' + p.drug_2 + ')'),
+      line('Tissue · cell line', cap(run.tissue) + ' · ' + run.cell),
+      line('Predicted synergy', METRICS.map(m => (m === 'Zip' ? 'ZIP' : m) + ' ' + num(p['Prediction_label_' + m])).join(' · ') + ' (' + n5 + ' of 4 above 5)'),
+      line('Uncertainty (HSA)', 'total ' + num(p.HSA_total_std) + ' · aleatoric ' + num(p.HSA_aleatoric_std) + ' · epistemic ' + num(p.HSA_epistemic_std) + ' · 95% interval ' + num(p.HSA_pi_lower) + ' to ' + num(p.HSA_pi_upper)),
+      line('Final status', status + (k && k.confidence ? ' · confidence ' + k.confidence : ''))));
+    const g1 = genesOf(drugs[p.drug_1]), g2 = genesOf(drugs[p.drug_2]), shared = g1.filter(g => g2.includes(g));
+    body.append(section('Drug targets', geneList(p.drug_1_name, g1, shared), geneList(p.drug_2_name, g2, shared),
+      el('p', 'k', 'Source: Drug_metadata · curated_target_genes_RepurposingHub (Zetaris).' + (shared.length ? ' Highlighted: shared targets.' : ''))));
+    const ev = [];
+    if (k) {
+      const add = (label, v) => { if (v && v !== 'unknown') ev.push(line(label, v)); };
+      add('Target and pathway level', k.cancer_pathway_or_phenotype || k.tissue_pathway_or_phenotype);
+      add('Biological rationale', k.mechanistic_rationale);
+      add('Supporting evidence', k.evidence_summary);
+      const more = el('details'); more.append(el('summary', null, 'Limitations, contradictions and sources'));
+      [['Negative or contradictory', k.negative_or_contradictory_evidence], ['Cell-line model limitations', k.cell_line_model_limitations], ['Unresolved issues', k.unresolved_issues]]
+        .forEach(([a, b]) => { if (b && b !== 'unknown' && b !== 'none') more.append(line(a, b)); });
+      const ul = el('ul'); jsonList(k.verified_pmids).forEach(id => { const li = el('li'); const a = el('a', null, 'PubMed ' + id); a.href = 'https://pubmed.ncbi.nlm.nih.gov/' + id + '/'; a.target = '_blank'; a.rel = 'noopener'; li.append(a); ul.append(li); });
+      if (ul.children.length) more.append(ul);
+      ev.push(more);
+    } else ev.push(el('p', 'k', 'No agent evidence stored in Zetaris for this pair yet.'));
+    body.append(section('Evidence', ...ev));
+    d.append(body); box.append(d);
+  });
+  $('results').hidden = false;
+}
+
+/* ---------- run the pipeline ---------- */
+async function stage(name) { return getJSON('/stage/' + name + '?cell_line=' + encodeURIComponent(run.cell)); }
+$('runBtn').addEventListener('click', async () => {
+  const cell = $('cell').value, tissue = $('tissue').value; if (!cell || running) return;
+  running = true; run = { cell, tissue }; $('runBtn').disabled = true; $('tissue').disabled = true; $('cell').disabled = true;
+  setMode('running'); $('log').replaceChildren(); $('tableArea').hidden = true; $('results').hidden = true; $('explore').hidden = true;
+  [1, 2, 3].forEach(i => setFunnel(i, 'pending', '–'));
+  renderModalities(); ringModalities();
+  try {
+    track(0, true);
+    msg('note', 'Input selected', [cap(tissue) + ' · ' + cell]);
+    track(1);
+    const m0 = msg('zetaris', 'Reading from Zetaris…', ['All drug pairs and the model’s predictions for ' + cell]);
+    const pred = await stage('predictions'); run.pred = pred; m0.remove();
+    msg('zetaris', 'Data retrieval and model predictions · Zetaris', [fmt(pred.counts.all_pairs) + ' possible drug pairs; ' + fmt(pred.counts.with_predictions) + ' with model predictions for ' + cell + '.',
+      'Predictions from the multimodal model (Output.csv), stored in Zetaris. Query in ' + pred.seconds + ' s, ' + pred.rows_retrieved + ' row read (counts).'], sqlBlock(pred));
+    track(2, true); track(3); setFunnel(1, 'active', '…');
+    const syn = await stage('synergy'); run.synergy = syn;
+    setFunnel(1, 'open', fmt(syn.pairs.length), 'Show the table');
+    msg('zetaris', 'Prediction filter · Zetaris', [fmt(syn.rows_retrieved) + ' rows retrieved in ' + syn.seconds + ' s: pairs with at least 3 of 4 synergy scores predicted above 5.',
+      fmt(pred.counts.with_predictions) + ' → ' + fmt(syn.pairs.length) + ' pairs.'], sqlBlock(syn));
+    track(4); setFunnel(2, 'active', '…');
+    const unc = await stage('uncertainty'); run.uncertainty = unc;
+    setFunnel(2, 'open', fmt(unc.pairs.length), 'Show the table');
+    msg('zetaris', 'Uncertainty filter · Zetaris', [fmt(unc.rows_retrieved) + ' rows retrieved in ' + unc.seconds + ' s: z_HSA = (predicted HSA − 5) / HSA total uncertainty ≥ 1.',
+      fmt(syn.pairs.length) + ' → ' + fmt(unc.pairs.length) + ' pairs: ' + fmt(syn.pairs.length - unc.pairs.length) + ' removed as too uncertain.'], sqlBlock(unc));
+    track(5); setFunnel(3, 'active', '…');
+    let ag = await stage('agent');
+    // no agent results for this cell line yet: run ./run_pipeline.sh <CELL> now and stream its log
+    if (!ag.kept.length && !ag.screened.length && await runAgentLive(cell)) ag = await stage('agent');
+    run.agent = ag;
+    agentMessages(ag, unc);
+    setFunnel(3, ag.kept.length || ag.screened.length ? 'open' : 'pending', ag.kept.length ? fmt(ag.kept.length) : '0', 'Show the table');
+    if (ag.kept.length || ag.screened.length) $('f3').disabled = false;
+    track(6); renderResults(); track(6, true);
+    const top = !modalities.length ? null : (ag.kept.length ? unc.pairs.find(p => ag.kept.some(k => cidKey(k.drug1_pubchem_cid, k.drug2_pubchem_cid) === cidKey(p.drug_1, p.drug_2))) : unc.pairs[0]);
+    if (top) {
+      const sel = run.pred.annotation;
+      const av = await getJSON('/modalities?drug1=' + top.drug_1 + '&drug2=' + top.drug_2 + '&cell=' + sel.cell_line_id);
+      if (av.modalities.length) modalities = av.modalities;
+      renderModalities({ d1: top.drug_1_name, d2: top.drug_2_name, cell: cell }); ringModalities(true);
+    }
+    if (window.SynergyRing) window.SynergyRing.showAll();
+    setMode('done');
+  } catch (e) {
+    msg('note', 'Stopped', [e.message]); setMode('explore'); track(-1);
+  } finally {
+    running = false; $('runBtn').disabled = !$('cell').value; $('tissue').disabled = false; $('cell').disabled = false;
+    $('runBtn').textContent = 'Run again';
+  }
+});
+// Starts ./run_pipeline.sh <CELL> on the server (Zetaris shortlist, the agent through Nightshift,
+// Zetaris refresh) and shows its output line by line until it finishes. Returns false when the
+// server does not start it (AGENT_ON_SUBMIT=0).
+async function runAgentLive(cell) {
+  const st = await getJSON('/agent/start?cell_line=' + encodeURIComponent(cell));
+  if (!st.enabled || !['running', 'queued'].includes(st.state)) return false;
+  const box = el('div', 'live'), head = msg('agent', 'Running ' + st.command + ' (live)', ['Zetaris shortlist → agent through Nightshift → results back into Zetaris. Each "→ Nightshift" line is one LLM call.'], box);
+  const title = head.querySelector('b');
+  let next = 0, calls = 0, kept = 0, examined = 0, state = st.state;
+  while (true) {
+    await new Promise(r => setTimeout(r, 1500));
+    let lg;
+    try { lg = await getJSON('/agent/log?cell_line=' + encodeURIComponent(cell) + '&from=' + next); } catch { continue; }
+    lg.lines.forEach(line => {
+      if (!line.trim()) return;
+      const cls = /-> Nightshift ·/.test(line) ? 'ns' : /-> KEEP/.test(line) ? 'keep' : /-> REJECT|failed|error/i.test(line) ? 'reject' : /^unit /.test(line) ? 'unit' : /Zetaris|drug pairs|Agent input|Saved/.test(line) ? 'zet' : '';
+      if (cls === 'ns') calls++; if (cls === 'keep') kept++; if (/-> (KEEP|REJECT)/.test(line)) examined++;
+      box.append(el('div', cls, line.replace(/^\s+/, ' ').replace('-> Nightshift', '→ Nightshift')));
+    });
+    next = lg.next; state = lg.state;
+    if (lg.lines.length) box.scrollTop = box.scrollHeight;
+    title.textContent = 'Running ' + st.command + ' · ' + calls + ' LLM calls through Nightshift · ' + examined + ' pairs reviewed, ' + kept + ' kept';
+    if (!['running', 'queued'].includes(state) && !lg.lines.length) break;
+  }
+  title.textContent = (state === 'failed' ? 'Stopped: ' : 'Finished: ') + st.command + ' · ' + calls + ' LLM calls through Nightshift · ' + examined + ' pairs reviewed, ' + kept + ' kept';
+  return true;
+}
+function agentMessages(ag, unc) {
+  if (!ag.kept.length && !ag.screened.length) {
+    msg('agent', 'Multi-agent evidence review', ['No agent review stored in Zetaris for ' + ag.cell_line + ' yet (DRUG_SYNERGY_DATA.agent_ranked).',
+      'The shortlist below is awaiting review; the agent runs from the command line: ./run_pipeline.sh ' + ag.cell_line + '.'], sqlBlock(ag));
+    return;
+  }
+  msg('agent', 'Multi-agent evidence review · ' + ag.engine, ['Model route: ' + ag.model_route + '. Results read from Zetaris in ' + ag.seconds + ' s.'], sqlBlock(ag));
+  const flow = el('ul');
+  ['Zetaris shortlist (' + fmt(unc.pairs.length) + ' pairs, highest z_HSA first)', 'Code retrieves PubMed abstracts and PubChem names for each pair',
+   'Proposer drafts the evidence class, mechanism and citations', 'Code checks every cited PMID was actually retrieved',
+   'Critic raises objections; a serious one sends the pair back to the Proposer (at most 3 rounds)', 'Code gate keeps or rejects; results go back to Zetaris']
+    .forEach(s => flow.append(el('li', null, s)));
+  msg('agent', 'Handoffs', [], flow);
+  const ul = el('ul');
+  if (ag.screened.length) ag.screened.forEach(s => {
+    const li = el('li'); const [c, t] = decisionOf(s);
+    li.append(el('span', 'dec ' + c, t + ': '), document.createTextNode(s.Drug1 + ' + ' + s.Drug2 + (s.rounds_used ? ' · ' + s.rounds_used + ' round(s)' : '') + (s.decision === 'reject' ? ' · ' + s.reason : ' · ' + (s.evidence_class || '').replace(/_/g, ' '))));
+    ul.append(li);
+  }); else ag.kept.forEach(k => {
+    const li = el('li'); const [c, t] = decisionOf(k);
+    li.append(el('span', 'dec ' + c, t + ': '), document.createTextNode(k.Drug1 + ' + ' + k.Drug2 + ' · ' + (k.evidence_class || '').replace(/_/g, ' ') + (k.rounds_used ? ' · ' + k.rounds_used + ' round(s)' : '')));
+    ul.append(li);
+  });
+  const p = ag.progress || {};
+  msg('agent', 'Decisions', [(ag.screened.length ? fmt(ag.screened.length) + ' pairs examined, ' : '') + fmt(ag.kept.length) + ' retained' + (p.status ? ' · run status: ' + p.status.replace(/_/g, ' ') : '') + '.'], ul);
+}
+
+/* ---------- start ---------- */
+track(-1);
+loadCells();
+if (window.SynergyRing) loadModalities(); else document.addEventListener('synergyring:ready', loadModalities);
+
+</script>
+</body>
+</html>
